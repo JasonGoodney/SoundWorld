@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="u3q-sm-xfY">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="QfI-88-bx2">
+            <objects>
+                <viewController id="zJM-qG-Bbi" userLabel="View Controller" customClass="HomeViewController" customModule="NowPlayingView" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="8hR-Le-hOe"/>
+                        <viewControllerLayoutGuide type="bottom" id="wig-cp-jI9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="v6q-Mo-xNc">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Spotify App Remote" id="9l1-5w-pvP"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ERd-q6-NRJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1975.2" y="1334.4827586206898"/>
+        </scene>
+        <!--Player-->
+        <scene sceneID="CB0-XN-2xU">
+            <objects>
+                <navigationController navigationBarHidden="YES" id="u3q-sm-xfY" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Player" id="jCV-YG-av1"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="13k-QN-EAZ">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="zJM-qG-Bbi" kind="relationship" relationship="rootViewController" id="ZuQ-Kt-RAQ"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZxN-lV-mig" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="545" y="1334"/>
+        </scene>
+    </scenes>
+</document>
