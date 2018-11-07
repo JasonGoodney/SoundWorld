@@ -55,7 +55,7 @@ struct Song {
         static let playbackDuration = "playbackDuration"
     }
     
-    init(uid: String = UUID().uuidString, title: String, artist: String, spotifyUri: String, isSavedToSpotify: Bool, isPaused: Bool, playbackDuration: TimeInterval) {
+    init(uid: String = UUID().uuidString, title: String = "No Title" , artist: String = "No Artist", spotifyUri: String = "No URI", isSavedToSpotify: Bool = false, isPaused: Bool = false, playbackDuration: TimeInterval = 0.0) {
         self.uid = uid
         self.title = title
         self.artist = artist

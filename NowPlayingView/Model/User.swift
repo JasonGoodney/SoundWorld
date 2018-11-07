@@ -18,9 +18,11 @@ struct User {
     var longitude: Double
     var isAppleMusicSubscriber: Bool
     var isAnonymous: Bool
+    var song: Song
     
     var firebaseDictionary: [String: Any] {
         return [
+            // User
             Key.uid: uid,
             Key.email: email,
             Key.songUid: songUid,
@@ -28,7 +30,15 @@ struct User {
             Key.latitude: latitude,
             Key.longitude: longitude,
             Key.isAppleMusicSubscriber: isAppleMusicSubscriber,
-            Key.isAnonymous: isAnonymous
+            Key.isAnonymous: isAnonymous,
+            
+            // Song
+            SongKey.title: song.title,
+            SongKey.artist: song.artist,
+            SongKey.spotifyUri: song.spotifyUri as! String,
+            SongKey.isSavedToSpotify: song.isSavedToSpotify,
+            SongKey.isPaused: song.isPaused,
+            SongKey.playbackDuration: song.playbackDuration,
         ]
     }
     
@@ -48,6 +58,19 @@ struct User {
         static let isAnonymous = "isAnonymous"
     }
     
+    enum SongKey {
+        
+        static let songs = "songs"
+        // Properties
+        static let uid = "uid"
+        static let title = "title"
+        static let artist = "artist"
+        static let spotifyUri  = "spotifyUri"
+        static let isSavedToSpotify = "isSavedToSpotify"
+        static let isPaused = "isPaused"
+        static let playbackDuration = "playbackDuration"
+    }
+    
     init(uid: String,
          email: String,
          songUid: String = UUID().uuidString,
@@ -55,7 +78,8 @@ struct User {
          latitude: Double,
          longitude: Double,
          isAppleMusicSubscriber: Bool = false,
-         isAnonymous: Bool = true) {
+         isAnonymous: Bool = true,
+         song: Song) {
         
         self.uid = uid
         self.email = email
@@ -65,6 +89,7 @@ struct User {
         self.longitude = longitude
         self.isAppleMusicSubscriber = isAppleMusicSubscriber
         self.isAnonymous = isAnonymous
+        self.song = song
     }
     
     init?(snapshot: DataSnapshot) {
@@ -79,6 +104,7 @@ struct User {
         let isAppleMusicSubscriber = value[Key.isAppleMusicSubscriber] as? Bool ?? false
         let isAnonymous = value[Key.isAnonymous] as? Bool ?? true
         
+ 
         self.uid = uid
         self.email = email
         self.songUid = songUid
@@ -87,6 +113,22 @@ struct User {
         self.longitude = longitude
         self.isAppleMusicSubscriber = isAppleMusicSubscriber
         self.isAnonymous = isAnonymous
+        
+        if let title = value[SongKey.title] as? String,
+            let artist = value[SongKey.artist] as? String,
+            let uid = value[SongKey.uid] as? String,
+            let spotifyUri = value[SongKey.spotifyUri] as? String,
+            let isSavedToSpotify = value[SongKey.isSavedToSpotify] as? Bool,
+            let isPaused = value[SongKey.isPaused] as? Bool,
+            let playbackDuration = value[SongKey.playbackDuration] as? Double {
+            
+            let song = Song(uid: uid, title: title, artist: artist, spotifyUri: spotifyUri, isSavedToSpotify: isSavedToSpotify, isPaused: isPaused, playbackDuration: playbackDuration)
+            
+            self.song = song
+        } else {
+            let emptySong = Song()
+            self.song = emptySong
+        }
     }
     
     init?(dictionary: [String: Any]) {
@@ -109,6 +151,23 @@ struct User {
         self.longitude = longitude
         self.isAppleMusicSubscriber = isAppleMusicSubscriber
         self.isAnonymous = isAnonymous
+        
+        if let title = value[SongKey.title] as? String,
+            let artist = value[SongKey.artist] as? String,
+            let uid = value[SongKey.uid] as? String,
+            let spotifyUri = value[SongKey.spotifyUri] as? String,
+            let isSavedToSpotify = value[SongKey.isSavedToSpotify] as? Bool,
+            let isPaused = value[SongKey.isPaused] as? Bool,
+            let playbackDuration = value[SongKey.playbackDuration] as? Double {
+            
+            let song = Song(uid: uid, title: title, artist: artist, spotifyUri: spotifyUri, isSavedToSpotify: isSavedToSpotify, isPaused: isPaused, playbackDuration: playbackDuration)
+            
+            self.song = song
+        } else {
+            let emptySong = Song()
+            self.song = emptySong
+        }
+        
     }
 }
 

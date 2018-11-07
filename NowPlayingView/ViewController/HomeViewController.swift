@@ -70,13 +70,15 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         } else {
             AuthManager.shared.signInAnonymously { (result) in
                 guard let user = result?.user else { return }
-                UserController.shared.user = User(uid: user.uid, email: "\(user.uid)@gmail.com", latitude: LocationController.shared.latitude, longitude: LocationController.shared.longitude)
+                let emptySong = Song()
+                UserController.shared.user = User(uid: user.uid, email: "\(user.uid)@gmail.com", latitude: LocationController.shared.latitude, longitude: LocationController.shared.longitude, song: emptySong)
 
                 dm.updateUser(UserController.shared.user!.firebaseDictionary, forUid: user.uid)
 
                 if let uid = UserController.shared.user?.songUid,
                     let values = self.currentlyPlayingSong?.firebaseDictionary {
-                    dm.updateSong(values, forUid: uid)
+//                    dm.updateSong(values, forUid: uid)
+                    dm.updateUser(values, forUid: uid)
                 }
             }
         }
@@ -108,7 +110,8 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
                 Song.Key.artist: artist,
                 Song.Key.playbackDuration: playbackDuration,
             ]
-            dm.updateSong(songValues, forUid: uid)
+//            dm.updateSong(songValues, forUid: uid)
+            dm.updateUser(songValues, forUid: uid)
         }
     }
 
