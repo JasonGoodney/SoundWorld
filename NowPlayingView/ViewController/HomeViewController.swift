@@ -28,7 +28,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         let button = SpotifyConnectButton(frame: .zero)
         button.delegate = self
         button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
-        button.isHidden = true
         return button
     }()
     lazy var searchBar: UISearchBar = {
