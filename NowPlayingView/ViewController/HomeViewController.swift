@@ -1,5 +1,6 @@
 import UIKit
 import StoreKit
+import MapKit
 import FirebaseAuth
 
 class HomeViewController: UIViewController,
@@ -10,7 +11,7 @@ class HomeViewController: UIViewController,
     fileprivate let playURI = ""
     var trackIdentifier = "" {
         didSet {
-            playTrackWithIdentifier(trackIdentifier)
+            playTrackWithUri(trackIdentifier)
         }
     }
     fileprivate let name = "Now Playing View"
@@ -22,7 +23,21 @@ class HomeViewController: UIViewController,
         let view = PlayerView(frame: .zero)
         view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
         return view
+    }()
+    lazy var spotifyConnectButton: SpotifyConnectButton = {
+        let button = SpotifyConnectButton(frame: .zero)
+        button.delegate = self
+        button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.delegate = self
+        searchBar.placeholder = "Search artist, song, or genre."
+        return searchBar
     }()
 
     // MARK: - Lifecycle
@@ -32,15 +47,17 @@ class HomeViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        navigationController?.navigationBar.isHidden = true
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         
         addChild(mapViewController)
         view.addSubview(mapViewController.view)
         mapViewController.didMove(toParent: self)
         
-        setupPlayerView()
-        
+        updateView()
+                
         mapViewController.view.translatesAutoresizingMaskIntoConstraints = false
         mapViewController.view.bottomAnchor.constraint(equalTo: playerView.topAnchor, constant: 0).isActive = true
         mapViewController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
@@ -69,11 +86,10 @@ class HomeViewController: UIViewController,
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: connectionIndicatorView)
         connectionIndicatorView.frame = CGRect(origin: CGPoint(), size: CGSize(width: 20,height: 20))
     }
-
+    
     // MARK: - View
     fileprivate func updateViewWithPlayerState(_ playerState: SPTAppRemotePlayerState) {
-//        updatePlayPauseButtonState(playerState.isPaused)
-        playButton(playerView.playButton, updatePlayButtonState: playerState.isPaused)
+        playButton(playerView.playButton, isPaused: playerState.isPaused)
         SpotifyManager.shared.fetchAlbumArtForTrack(appRemote, playerState.track) { (image) in
             self.playerView.updateAlbumArtWithImage(image)
         }
@@ -105,16 +121,9 @@ class HomeViewController: UIViewController,
 
     fileprivate func enableInterface(_ enabled: Bool = true) {
         if (!enabled) {
-//            updatePlayPauseButtonState(true)
-            playButton(playerView.playButton, updatePlayButtonState: true)
+            playButton(playerView.playButton, isPaused: true)
         }
     }
-
-//    fileprivate func updatePlayPauseButtonState(_ paused: Bool) {
-//        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
-//        playerView.playButton.setImage(playPauseButtonImage, for: UIControl.State())
-//        playerView.playButton.setImage(playPauseButtonImage, for: .highlighted)
-//    }
     
     fileprivate func setupPlayerView() {
         view.addSubview(playerView)
@@ -129,17 +138,11 @@ class HomeViewController: UIViewController,
     func updateProgressView(_ playerState: SPTAppRemotePlayerState) {
         let durationSeconds = Float(playerState.track.duration) / 1000
         let playbackPosition = Float(playerState.playbackPosition) / 1000
-        
-        //        self.playbackDurationProgressView.setProgress(currentPlaybackPositionProgress, animated: false)
-        //        print("Progress:", self.playbackDurationProgressView.progress)
-        //
-        
+
         print("Seconds:", Float(playerState.playbackPosition / 1000))
         
         playerView.durationView.maximumValue = durationSeconds
         playerView.durationView.value = playbackPosition
-        
-        
         
         if !isDurationInProgress {
             runProgress(durationSeconds)
@@ -289,17 +292,23 @@ class HomeViewController: UIViewController,
         }
     }
 
-    func playTrackWithIdentifier(_ identifier: String) {
-        if PlayerStateController.shared.state?.track.uri == identifier {
+    func playTrackWithUri(_ uri: String) {
+        if PlayerStateController.shared.state?.track.uri == uri {
             return
         }
-        appRemote.playerAPI?.play(identifier, callback: { (callback, error) in
+        if !(appRemote.isConnected) {
+            if (!appRemote.authorizeAndPlayURI(uri)) {
+                // The Spotify app is not installed, present the user with an App Store page
+                showAppStoreInstall()
+            }
+        }
+        
+        appRemote.playerAPI?.play(uri, callback: { (callback, error) in
             if let callback = callback {
                 print("is playing")
                 self.getPlayerState()
             }
         })
-        
         
     }
 
@@ -334,9 +343,6 @@ class HomeViewController: UIViewController,
 
         appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultCallback)
     }
-
-    // MARK: - Image API
-
 
     // MARK: - User API
     fileprivate var subscribedToCapabilities: Bool = false
@@ -377,7 +383,6 @@ class HomeViewController: UIViewController,
         self.playerState = playerState
         PlayerStateController.shared.state = self.playerState
         updateViewWithPlayerState(playerState)
-        //isDurationInProgress = false
     }
 
     // MARK: - <SPTAppRemoteUserAPIDelegate>
@@ -402,6 +407,8 @@ class HomeViewController: UIViewController,
         subscribeToCapabilityChanges()
         getPlayerState()
 
+        spotifyConnectButton.isHidden = true
+        playerView.isHidden = false
         enableInterface(true)
     }
 
@@ -409,14 +416,32 @@ class HomeViewController: UIViewController,
         connectionIndicatorView.state = .disconnected
         self.subscribedToPlayerState = false
         self.subscribedToCapabilities = false
+        spotifyConnectButton.isHidden = false
+        playerView.isHidden = true
         enableInterface(false)
     }
-}
-
-
-extension HomeViewController: PlayerViewDelegate {
-
-    func playerView(_ view: PlayerView, playButtonTapped: UIButton) {
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0{
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
+    }
+    
+    func connectToSpotify() {
         if !(appRemote.isConnected) {
             if (!appRemote.authorizeAndPlayURI(playURI)) {
                 // The Spotify app is not installed, present the user with an App Store page
@@ -430,8 +455,44 @@ extension HomeViewController: PlayerViewDelegate {
         
         getPlayerState()
     }
+
+}
+
+// MARK: - UI
+private extension HomeViewController {
+    func updateView() {
+        addSubviews([spotifyConnectButton])
+        setupNavigationBar()
+        setupPlayerView()
+        setupSpotifyConnectButton()
+    }
     
-    func open(scheme: String) {
+    func addSubviews(_ subviews: [UIView]) {
+        subviews.forEach{ view.addSubview($0) }
+    }
+
+    func setupNavigationBar() {
+        navigationItem.titleView = searchBar
+    }
+    
+    func setupSpotifyConnectButton() {
+        NSLayoutConstraint.activate([
+            spotifyConnectButton.leftAnchor.constraint(equalTo: view.leftAnchor),
+            spotifyConnectButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            spotifyConnectButton.rightAnchor.constraint(equalTo: view.rightAnchor),
+            spotifyConnectButton.heightAnchor.constraint(equalToConstant: 72)
+        ])
+    }
+}
+
+// MARK: - PlayerViewDelegate
+extension HomeViewController: PlayerViewDelegate {
+
+    func playerView(_ view: PlayerView, playButtonTapped: UIButton) {
+        connectToSpotify()
+    }
+    
+    func open(scheme: String, appStoreUrlString: String) {
         guard let url = URL(string: scheme) else { return }
         if UIApplication.shared.canOpenURL(url) {
             if #available(iOS 10, *) { // For ios 10 and greater
@@ -445,7 +506,7 @@ extension HomeViewController: PlayerViewDelegate {
                 print("Open \(scheme): \(success)")
             }
         } else {
-            UIApplication.shared.open(URL(string: "https://itunes.apple.com/app/spotify-music/id324684580")!, options: [:]) { (success) in
+            UIApplication.shared.open(URL(string: appStoreUrlString)!, options: [:]) { (success) in
                 if success { print("opening app store to spotify")}
             }
         }
@@ -459,20 +520,26 @@ extension HomeViewController: PlayerViewDelegate {
 
         let spotifyUrl = "https://open.spotify.com/\(artist)/\(artistId)"
         
-        open(scheme: spotifyUrl)
-    }
-    
-    func playerView(_ view: PlayerView, updatePlayPauseButtonState paused: Bool) {
-//        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
-//        view.playButton.setImage(playPauseButtonImage, for: UIControl.State())
-//        view.playButton.setImage(playPauseButtonImage, for: .highlighted)
+        open(scheme: spotifyUrl, appStoreUrlString: "https://itunes.apple.com/app/spotify-music/id324684580")
     }
 }
 
 extension HomeViewController: PlayButtonDelegate {
-    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool) {
-        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
+    func playButton(_ button: UIButton, isPaused: Bool) {
+        let playPauseButtonImage = isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
         button.setImage(playPauseButtonImage, for: UIControl.State())
         button.setImage(playPauseButtonImage, for: .highlighted)
+    }
+}
+
+extension HomeViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("🤶\(#function)")
+    }
+}
+
+extension HomeViewController: SpotifyConnectButtonDelegate {
+    @objc func spotifyConnectButtonTapped(_ button: SpotifyConnectButton) {
+        connectToSpotify()
     }
 }

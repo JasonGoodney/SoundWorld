@@ -5,8 +5,8 @@ import Firebase
 class AppDelegate: UIResponder,
     UIApplicationDelegate, SPTAppRemoteDelegate {
 
-    fileprivate let redirectUri = URL(string:"comjtgnowplaying://")!
     fileprivate let clientIdentifier = "bcf18acff440420bbcd8978d2f56639f"
+    fileprivate let redirectUri = URL(string:"comjtgnowplaying://")!
     fileprivate let name = "Now Playing View"
 
     // keys
@@ -26,6 +26,22 @@ class AppDelegate: UIResponder,
             return navController.topViewController as! HomeViewController
         }
     }
+    
+    lazy var configuration = SPTConfiguration(
+        clientID: self.clientIdentifier,
+        redirectURL: self.redirectUri
+    )
+    
+    lazy var sessionManager: SPTSessionManager = {
+        if let tokenSwapURL = URL(string: "https://[my token swap app domain]/api/token"),
+            let tokenRefreshURL = URL(string: "https://[my token swap app domain]/api/refresh_token") {
+            self.configuration.tokenSwapURL = tokenSwapURL
+            self.configuration.tokenRefreshURL = tokenRefreshURL
+            self.configuration.playURI = ""
+        }
+        let manager = SPTSessionManager(configuration: self.configuration, delegate: self)
+        return manager
+    }()
     
     var window: UIWindow?
 
@@ -97,4 +113,18 @@ class AppDelegate: UIResponder,
         playerViewController.appRemoteDisconnect()
     }
 
+}
+
+extension AppDelegate: SPTSessionManagerDelegate {
+    func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        print("success", session)
+        self.appRemote.connectionParameters.accessToken = session.accessToken
+        self.appRemote.connect()
+    }
+    func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        print("fail", error)
+    }
+    func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        print("renewed", session)
+    }
 }

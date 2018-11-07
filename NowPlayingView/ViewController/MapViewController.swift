@@ -175,12 +175,25 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-        guard let annotation = view.annotation as? Annotation else { return }
+        guard let personAnnotationView = view as? PersonAnnotationView else { return }
+        guard let annotation = personAnnotationView.annotation as? Annotation else { return }
         guard let user = annotation.user else { return }
         guard let song = annotation.song else { return }
         
+        personAnnotationView.delegate = self
+        if PlayerStateController.shared.state?.track.uri == song.spotifyUri {
+            playButton(personAnnotationView.playButton, isPaused: false)
+        }
+        
         print(user.uid)
         print(song.title)
+    }
+    
+    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        guard let homeVC = self.parent as? HomeViewController else { return }
+        if homeVC.searchBar.isFirstResponder {
+            homeVC.searchBar.resignFirstResponder()
+        }
     }
 
 }
@@ -213,8 +226,14 @@ extension MapViewController: PersonAnnotationViewDelegate {
         
         let vc = HomeViewController()
         vc.trackIdentifier = uri
-        
-        
+    }
+}
+
+extension MapViewController: PlayButtonDelegate {
+    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool) {
+        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
+        button.setImage(playPauseButtonImage, for: UIControl.State())
+        button.setImage(playPauseButtonImage, for: .highlighted)
     }
 }
 

@@ -9,11 +9,11 @@
 import UIKit
 
 protocol PlayButtonDelegate: class {
-    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool)
+    func playButton(_ button: UIButton, isPaused: Bool)
 }
 extension PlayButtonDelegate {
-    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool) {
-        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
+    func playButton(_ button: UIButton, isPaused: Bool) {
+        let playPauseButtonImage = isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
         button.setImage(playPauseButtonImage, for: UIControl.State())
         button.setImage(playPauseButtonImage, for: .highlighted)
     }
@@ -22,7 +22,6 @@ extension PlayButtonDelegate {
 protocol PlayerViewDelegate: class {
     func playerView(_ view: PlayerView, playButtonTapped: UIButton)
     func playerView(_ view: PlayerView, albumArtTapped: UITapGestureRecognizer)
-    func playerView(_ view: PlayerView, updatePlayPauseButtonState paused: Bool)
 }
 
 class PlayerView: UIView {
@@ -114,7 +113,6 @@ class PlayerView: UIView {
             self.songNameLabel.text = songName
             self.artistNameLabel.text = artistName
         }
-   
     }
     
     func updateAlbumArtWithImage(_ image: UIImage) {
@@ -148,16 +146,12 @@ private extension PlayerView {
         songInfoConstraints()
         playButtonConstraints()
         durationViewConstraints()
-        
-        albumArtImageView.layer.cornerRadius = 5
-        albumArtImageView.clipsToBounds = true
     }
 
     func songInfoConstraints() {
         songInfoStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             songInfoStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            //songInfoStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             songInfoStackView.leftAnchor.constraint(equalTo: albumArtImageView.rightAnchor, constant: 16),
             songInfoStackView.rightAnchor.constraint(equalTo: playButton.leftAnchor, constant: -16),
         ])
