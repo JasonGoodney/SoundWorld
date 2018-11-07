@@ -3,17 +3,15 @@ import StoreKit
 import MapKit
 import FirebaseAuth
 
-class HomeViewController: UIViewController,
-                      SPTAppRemotePlayerStateDelegate,
-                      SPTAppRemoteUserAPIDelegate,
-                      SKStoreProductViewControllerDelegate {
+class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate {
 
-    fileprivate let playURI = ""
+    fileprivate var playURI = ""
     var trackIdentifier = "" {
         didSet {
             playTrackWithUri(trackIdentifier)
         }
     }
+    let userDefaults = UserDefaults.standard
     fileprivate let name = "Now Playing View"
     fileprivate var currentlyPlayingSong: Song?
     fileprivate var isDurationInProgress = false
@@ -288,6 +286,7 @@ class HomeViewController: UIViewController,
             let playerState = result as! SPTAppRemotePlayerState
             PlayerStateController.shared.state = playerState
 //            self.updateViewWithPlayerState(playerState)
+            self.playURI = playerState.track.uri
             self.playerStateDidChange(playerState)
         }
     }
@@ -376,50 +375,6 @@ class HomeViewController: UIViewController,
             self.updateCapabilitiesSubscriptionButtonState()
         })
     }
-
-    // MARK: - <SPTAppRemotePlayerStateDelegate>
-
-    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
-        self.playerState = playerState
-        PlayerStateController.shared.state = self.playerState
-        updateViewWithPlayerState(playerState)
-    }
-
-    // MARK: - <SPTAppRemoteUserAPIDelegate>
-
-    func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
-        updateViewWithCapabilities(capabilities)
-    }
-
-    func showError(_ errorDescription: String) {
-        let alert = UIAlertController(title: "Error!", message: errorDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    func appRemoteConnecting() {
-        connectionIndicatorView.state = .connecting
-    }
-
-    func appRemoteConnected() {
-        connectionIndicatorView.state = .connected
-        subscribeToPlayerState()
-        subscribeToCapabilityChanges()
-        getPlayerState()
-
-        spotifyConnectButton.isHidden = true
-        playerView.isHidden = false
-        enableInterface(true)
-    }
-
-    func appRemoteDisconnect() {
-        connectionIndicatorView.state = .disconnected
-        self.subscribedToPlayerState = false
-        self.subscribedToCapabilities = false
-        spotifyConnectButton.isHidden = false
-        playerView.isHidden = true
-        enableInterface(false)
-    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -443,6 +398,7 @@ class HomeViewController: UIViewController,
     
     func connectToSpotify() {
         if !(appRemote.isConnected) {
+            getPlayerState()
             if (!appRemote.authorizeAndPlayURI(playURI)) {
                 // The Spotify app is not installed, present the user with an App Store page
                 showAppStoreInstall()
@@ -453,7 +409,7 @@ class HomeViewController: UIViewController,
             pausePlayback()
         }
         
-        getPlayerState()
+//        getPlayerState()
     }
 
 }
@@ -485,9 +441,60 @@ private extension HomeViewController {
     }
 }
 
+// MARK: - SPTAppRemotePlayerStateDelegate
+extension HomeViewController: SPTAppRemotePlayerStateDelegate {
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        self.playerState = playerState
+        PlayerStateController.shared.state = self.playerState
+        updateViewWithPlayerState(playerState)
+    }
+}
+
+// MARK: - SPTAppRemoteUserAPIDelegate
+extension HomeViewController: SPTAppRemoteUserAPIDelegate {
+    
+    func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
+        updateViewWithCapabilities(capabilities)
+    }
+    
+    func showError(_ errorDescription: String) {
+        let alert = UIAlertController(title: "Error!", message: errorDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func appRemoteConnecting() {
+        connectionIndicatorView.state = .connecting
+    }
+    
+    func appRemoteConnected() {
+        connectionIndicatorView.state = .connected
+        subscribeToPlayerState()
+        subscribeToCapabilityChanges()
+        getPlayerState()
+        
+        spotifyConnectButton.isHidden = true
+        playerView.isHidden = false
+        enableInterface(true)
+    }
+    
+    func appRemoteDisconnect() {
+        connectionIndicatorView.state = .disconnected
+        self.subscribedToPlayerState = false
+        self.subscribedToCapabilities = false
+        enableInterface(false)
+    }
+
+}
+
 // MARK: - PlayerViewDelegate
 extension HomeViewController: PlayerViewDelegate {
 
+    func playerView(_ view: PlayerView, addSongToSpotifyButtonTapped: UIButton) {
+        
+        appRemote.userAPI?.addItemToLibrary(withURI: playURI, callback: defaultCallback)
+    }
+    
     func playerView(_ view: PlayerView, playButtonTapped: UIButton) {
         connectToSpotify()
     }

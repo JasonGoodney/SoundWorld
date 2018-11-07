@@ -21,6 +21,7 @@ extension PlayButtonDelegate {
 
 protocol PlayerViewDelegate: class {
     func playerView(_ view: PlayerView, playButtonTapped: UIButton)
+    func playerView(_ view: PlayerView, addSongToSpotifyButtonTapped: UIButton)
     func playerView(_ view: PlayerView, albumArtTapped: UITapGestureRecognizer)
 }
 
@@ -38,6 +39,19 @@ class PlayerView: UIView {
         return view
     }()
 
+    lazy var buttonStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [addSongToSpotifyButton, playButton])
+        stackView.axis = .horizontal
+        return stackView
+    }()
+    
+    lazy var addSongToSpotifyButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("+", for: .normal)
+        button.addTarget(self, action: #selector(addSongToSpotifyButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
     lazy var playButton: UIButton = {
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(playButtonTapped(_:)), for: .touchUpInside)
@@ -133,6 +147,10 @@ class PlayerView: UIView {
     @objc private func albumArtTapped(_ sender: UITapGestureRecognizer) {
         delegate?.playerView(self, albumArtTapped: sender)
     }
+    
+    @objc func addSongToSpotifyButtonTapped(_ sender: UIButton) {
+        delegate?.playerView(self, addSongToSpotifyButtonTapped: sender)
+    }
 }
 
 // MARK: - UI
@@ -140,11 +158,12 @@ private extension PlayerView {
     func setupView() {
         backgroundColor = UIColor.Theme.primaryBackground
         
-        addSubviews([albumArtImageView, songInfoStackView, playButton, durationView])
+        addSubviews([albumArtImageView, songInfoStackView, buttonStackView, durationView])
         
         albumArtImageViewConstraints()
         songInfoConstraints()
-        playButtonConstraints()
+//        playButtonConstraints()
+        buttonConstraints()
         durationViewConstraints()
     }
 
@@ -172,6 +191,12 @@ private extension PlayerView {
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
         playButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+    }
+    
+    func buttonConstraints() {
+        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
+        buttonStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
+        buttonStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
     func durationViewConstraints() {
