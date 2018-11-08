@@ -5,6 +5,8 @@ import FirebaseAuth
 
 class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate {
 
+    // MARK: - Properties
+    private let databaseManager = DatabaseManager()
     fileprivate var playURI = ""
     var trackIdentifier = "" {
         didSet {
@@ -95,7 +97,11 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         updateProgressView(playerState)
         let title = playerState.track.name
         let artist = playerState.track.artist.name
+        let spotifyUri = playerState.track.uri
         let playbackDuration = Double(playerState.track.duration / 1000)
+        let isSaveToSpotify = playerState.track.isSaved
+        let isPaused = playerState.isPaused
+        
         let dm = DatabaseManager()
         
         playerView.updatePlayerState(playerState)
@@ -106,7 +112,10 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
             let songValues: [String: Any] = [
                 Song.Key.title: title,
                 Song.Key.artist: artist,
+                Song.Key.spotifyUri: spotifyUri,
                 Song.Key.playbackDuration: playbackDuration,
+                Song.Key.isSavedToSpotify: isSaveToSpotify,
+                Song.Key.isPaused: isPaused
             ]
             dm.updateSong(songValues, forUid: uid)
         }
@@ -417,14 +426,10 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
 // MARK: - UI
 private extension HomeViewController {
     func updateView() {
-        addSubviews([spotifyConnectButton])
+        view.addSubviews([spotifyConnectButton])
         setupNavigationBar()
         setupPlayerView()
         setupSpotifyConnectButton()
-    }
-    
-    func addSubviews(_ subviews: [UIView]) {
-        subviews.forEach{ view.addSubview($0) }
     }
 
     func setupNavigationBar() {
@@ -491,12 +496,14 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
 extension HomeViewController: PlayerViewDelegate {
 
     func playerView(_ view: PlayerView, addSongToSpotifyButtonTapped: UIButton) {
-        
-        appRemote.userAPI?.addItemToLibrary(withURI: playURI, callback: defaultCallback)
+        guard let uri = self.playerState?.track.uri else { return }
+        appRemote.userAPI?.addItemToLibrary(withURI: uri, callback: defaultCallback)
     }
     
     func playerView(_ view: PlayerView, playButtonTapped: UIButton) {
         connectToSpotify()
+        let songValues: [String: Any] = ["isPaused": self.playerState?.isPaused]
+        databaseManager.updateSong(songValues, forUid: UserController.shared.user!.songUid)
     }
     
     func open(scheme: String, appStoreUrlString: String) {

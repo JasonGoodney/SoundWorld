@@ -17,7 +17,6 @@ class PersonAnnotationView: MKMarkerAnnotationView {
     
     weak var delegate: PersonAnnotationViewDelegate?
     
-    
 //    lazy var playButton: UIButton = {
 //        let button = UIButton(type: .system)
 //        button.addTarget(self, action: #selector(playButtonTapped(_:)), for: .touchUpInside)
@@ -58,6 +57,7 @@ class PersonAnnotationView: MKMarkerAnnotationView {
         let resizeImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 //        image = resizeImage
+        
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -67,6 +67,16 @@ class PersonAnnotationView: MKMarkerAnnotationView {
     override func prepareForDisplay() {
         super.prepareForDisplay()
         displayPriority = .defaultHigh
+    }
+    
+    func updatePlayButton() {
+        guard let annotation = annotation as? Annotation else { return }
+        guard let song = annotation.song else { return }
+        
+        let playButtonImage = song.isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
+        playButton.setImage(playButtonImage, for: UIControl.State())
+        playButton.setImage(playButtonImage, for: .highlighted)
+        
     }
     
     @objc func playButtonTapped(_ sender: UIButton) {

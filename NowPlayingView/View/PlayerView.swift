@@ -28,8 +28,7 @@ protocol PlayerViewDelegate: class {
 class PlayerView: UIView {
 
     weak var delegate: PlayerViewDelegate?
-   
-    
+
     // MARK: - Subviews
     let durationView: UISlider = {
         let view = UISlider()
@@ -165,6 +164,7 @@ private extension PlayerView {
 //        playButtonConstraints()
         buttonConstraints()
         durationViewConstraints()
+        
     }
 
     func songInfoConstraints() {

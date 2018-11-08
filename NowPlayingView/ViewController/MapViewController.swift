@@ -223,18 +223,19 @@ extension MapViewController: PersonAnnotationViewDelegate {
         guard let annotation = view.annotation as? Annotation else { return }
         guard let song = annotation.song else { return }
         guard let uri = song.spotifyUri else { return }
-        
+//        view.updatePlayButton()
+        playButton(view.playButton, isPaused: song.isPaused)
         let vc = HomeViewController()
         vc.trackIdentifier = uri
     }
 }
 
 extension MapViewController: PlayButtonDelegate {
-    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool) {
-        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
-        button.setImage(playPauseButtonImage, for: UIControl.State())
-        button.setImage(playPauseButtonImage, for: .highlighted)
-    }
+//    func playButton(_ button: UIButton, updatePlayButtonState paused: Bool) {
+//        let playPauseButtonImage = paused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
+//        button.setImage(playPauseButtonImage, for: UIControl.State())
+//        button.setImage(playPauseButtonImage, for: .highlighted)
+//    }
 }
 
 
