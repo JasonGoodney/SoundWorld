@@ -46,8 +46,10 @@ class PlayerView: UIView {
     
     lazy var addSongToSpotifyButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("+", for: .normal)
+//        button.setTitle("+", for: .normal)
+        button.setImage(UIImage(named: "plus"), for: .normal)
         button.addTarget(self, action: #selector(addSongToSpotifyButtonTapped), for: .touchUpInside)
+        button.tintColor = UIColor.Theme.primary
         return button
     }()
     
@@ -91,12 +93,6 @@ class PlayerView: UIView {
         return view
     }()
     
-    lazy var stackView: UIStackView = {
-        let view = UIStackView(arrangedSubviews: [albumArtImageView, songInfoStackView, playButton])
-        view.axis = .horizontal
-        return view
-    }()
-    
     convenience init() {
         self.init(frame: .zero)
         
@@ -119,12 +115,17 @@ class PlayerView: UIView {
     func updatePlayerState(_ playerState: SPTAppRemotePlayerState) {
         let song = playerState.track
         
-        let songName = song.name
-        let artistName = song.artist.name
-        
         DispatchQueue.main.async {
-            self.songNameLabel.text = songName
-            self.artistNameLabel.text = artistName
+            self.songNameLabel.text = song.name
+            self.artistNameLabel.text = song.artist.name
+        }
+        
+        if song.isSaved {
+            self.addSongToSpotifyButton.setImage(UIImage(named: "checkmark"), for: .normal)
+            self.addSongToSpotifyButton.tintColor = UIColor.Spotify.green
+        } else {
+            self.addSongToSpotifyButton.setImage(UIImage(named: "plus"), for: .normal)
+            self.addSongToSpotifyButton.tintColor = UIColor.Theme.primary
         }
     }
     
@@ -157,14 +158,14 @@ private extension PlayerView {
     func setupView() {
         backgroundColor = UIColor.Theme.primaryBackground
         
-        addSubviews([albumArtImageView, songInfoStackView, buttonStackView, durationView])
+        addSubviews([albumArtImageView, songInfoStackView, addSongToSpotifyButton, buttonStackView, durationView])
         
         albumArtImageViewConstraints()
         songInfoConstraints()
 //        playButtonConstraints()
         buttonConstraints()
         durationViewConstraints()
-        
+        addSongToSpotifyButtonConstraints()
     }
 
     func songInfoConstraints() {
@@ -172,7 +173,7 @@ private extension PlayerView {
         NSLayoutConstraint.activate([
             songInfoStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             songInfoStackView.leftAnchor.constraint(equalTo: albumArtImageView.rightAnchor, constant: 16),
-            songInfoStackView.rightAnchor.constraint(equalTo: playButton.leftAnchor, constant: -16),
+            songInfoStackView.rightAnchor.constraint(equalTo: addSongToSpotifyButton.leftAnchor, constant: -16),
         ])
     }
     
@@ -204,6 +205,16 @@ private extension PlayerView {
         durationView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         durationView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         durationView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+    }
+    
+    func addSongToSpotifyButtonConstraints() {
+        addSongToSpotifyButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            addSongToSpotifyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            addSongToSpotifyButton.rightAnchor.constraint(equalTo: buttonStackView.leftAnchor, constant: -20),
+            addSongToSpotifyButton.heightAnchor.constraint(equalToConstant: 20),
+            addSongToSpotifyButton.widthAnchor.constraint(equalToConstant: 20),
+        ])
     }
 }
 

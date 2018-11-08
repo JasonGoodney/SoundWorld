@@ -496,8 +496,13 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
 extension HomeViewController: PlayerViewDelegate {
 
     func playerView(_ view: PlayerView, addSongToSpotifyButtonTapped: UIButton) {
-        guard let uri = self.playerState?.track.uri else { return }
-        appRemote.userAPI?.addItemToLibrary(withURI: uri, callback: defaultCallback)
+        guard let uri = self.playerState?.track.uri, let isSaved = self.playerState?.track.isSaved else { return }
+        
+        if isSaved {
+            appRemote.userAPI?.removeItemFromLibrary(withURI: uri, callback: defaultCallback)
+        } else {
+            appRemote.userAPI?.addItemToLibrary(withURI: uri, callback: defaultCallback)
+        }
     }
     
     func playerView(_ view: PlayerView, playButtonTapped: UIButton) {

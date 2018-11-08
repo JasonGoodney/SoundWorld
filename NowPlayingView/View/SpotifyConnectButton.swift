@@ -28,7 +28,7 @@ class SpotifyConnectButton: UIButton {
     }
     
     func setupView() {
-        backgroundColor = #colorLiteral(red: 0.1137254902, green: 0.7254901961, blue: 0.3294117647, alpha: 1)
+        backgroundColor = UIColor.Spotify.green
         setTitle("Connect To Spotify", for: .normal)
         setTitleColor(.white, for: .normal)
         titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
