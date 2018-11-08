@@ -5,18 +5,24 @@ import FirebaseAuth
 
 class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate {
 
+    // MARK: - Properties
+    var appRemote: SPTAppRemote {
+        get {
+            return AppDelegate.sharedInstance.appRemote
+        }
+    }
     fileprivate var playURI = ""
     var trackIdentifier = "" {
         didSet {
             playTrackWithUri(trackIdentifier)
         }
     }
-    let userDefaults = UserDefaults.standard
-    fileprivate let name = "Now Playing View"
     fileprivate var currentlyPlayingSong: Song?
     fileprivate var isDurationInProgress = false
     
-    let mapViewController = MapViewController()
+    // MARK: - Subviews
+    private let mapViewController = MapViewController()
+    private var connectionIndicatorView = ConnectionStatusIndicatorView()
     lazy var playerView: PlayerView = {
         let view = PlayerView(frame: .zero)
         view.delegate = self
@@ -30,37 +36,19 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
-    lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.delegate = self
-        searchBar.placeholder = "Search artist, song, or genre."
-        return searchBar
-    }()
 
     // MARK: - Lifecycle
-
-    fileprivate var connectionIndicatorView = ConnectionStatusIndicatorView()
-
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationBar.isHidden = true
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        
-        addChild(mapViewController)
-        view.addSubview(mapViewController.view)
-        mapViewController.didMove(toParent: self)
-        
         updateView()
-                
-        mapViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        mapViewController.view.bottomAnchor.constraint(equalTo: playerView.topAnchor, constant: 0).isActive = true
-        mapViewController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        mapViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        mapViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-
+        
         LocationController.shared.requestCurrentLocation()
         let dm = DatabaseManager()
         
@@ -80,8 +68,15 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
             }
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: connectionIndicatorView)
-        connectionIndicatorView.frame = CGRect(origin: CGPoint(), size: CGSize(width: 20,height: 20))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print(playerView.playButton.frame)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - View
@@ -95,6 +90,10 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         let title = playerState.track.name
         let artist = playerState.track.artist.name
         let playbackDuration = Double(playerState.track.duration / 1000)
+        let isPaused = playerState.isPaused
+        let spotifyUri = playerState.track.uri
+        let isSavedToSpotify = playerState.track.isSaved
+        
         let dm = DatabaseManager()
         
         playerView.updatePlayerState(playerState)
@@ -120,14 +119,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         if (!enabled) {
             playButton(playerView.playButton, isPaused: true)
         }
-    }
-    
-    fileprivate func setupPlayerView() {
-        view.addSubview(playerView)
-        playerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        playerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
-        playerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        playerView.heightAnchor.constraint(equalToConstant: 72).isActive = true
     }
     
     // MARK: - Progress View
@@ -165,25 +156,8 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         })
     }
 
-    // MARK: Player State
-
-    fileprivate func updatePlayerStateSubscriptionButtonState() {
-        let playerStateSubscriptionButtonTitle = subscribedToPlayerState ? "Unsubscribe" : "Subscribe"
-        
-    }
-
-    fileprivate func updateViewWithCapabilities(_ capabilities: SPTAppRemoteUserCapabilities) {
-       
-    }
-
-    fileprivate func updateCapabilitiesSubscriptionButtonState() {
-        let capabilitiesSubscriptionButtonTitle = subscribedToCapabilities ? "Unsubscribe" : "Subscribe"
-
-    }
-
-    fileprivate var playerState: SPTAppRemotePlayerState?
+    var playerState: SPTAppRemotePlayerState?
     fileprivate var subscribedToPlayerState: Bool = false
-    
     
     var defaultCallback: SPTAppRemoteCallback {
         get {
@@ -235,20 +209,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     public func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
         viewController.dismiss(animated: true, completion: nil)
     }
-    
-    var appRemote: SPTAppRemote {
-        get {
-            return AppDelegate.sharedInstance.appRemote
-        }
-    }
-
-    fileprivate func skipNext() {
-        appRemote.playerAPI?.skip(toNext: defaultCallback)
-    }
-
-    fileprivate func skipPrevious() {
-        appRemote.playerAPI?.skip(toPrevious: defaultCallback)
-    }
 
     fileprivate func startPlayback() {
         appRemote.playerAPI?.resume(defaultCallback)
@@ -257,25 +217,9 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     fileprivate func pausePlayback() {
         appRemote.playerAPI?.pause(defaultCallback)
     }
-    
-    func playTrack() {
-        appRemote.playerAPI?.play(trackIdentifier, callback: { (callback, error) in
-            if let error = error {
-                print("Error playing track: \(error) \(error.localizedDescription)")
-            }
-            if let callback = callback {
-                print("is playing")
-            }
-        })
-    }
 
     fileprivate func enqueueTrack() {
         appRemote.playerAPI?.enqueueTrackUri(trackIdentifier, callback: defaultCallback)
-    }
-
-    fileprivate func toggleShuffle() {
-        guard let playerState = playerState else { return }
-        appRemote.playerAPI?.setShuffle(!playerState.playbackOptions.isShuffling, callback: defaultCallback)
     }
 
     fileprivate func getPlayerState() {
@@ -284,7 +228,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
 
             let playerState = result as! SPTAppRemotePlayerState
             PlayerStateController.shared.state = playerState
-//            self.updateViewWithPlayerState(playerState)
             self.playURI = playerState.track.uri
             self.playerStateDidChange(playerState)
         }
@@ -307,7 +250,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
                 self.getPlayerState()
             }
         })
-        
     }
 
     fileprivate func subscribeToPlayerState() {
@@ -316,7 +258,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         appRemote.playerAPI?.subscribe { (_, error) -> Void in
             guard error == nil else { return }
             self.subscribedToPlayerState = true
-            self.updatePlayerStateSubscriptionButtonState()
         }
     }
 
@@ -325,34 +266,11 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         appRemote.playerAPI?.unsubscribe { (_, error) -> Void in
             guard error == nil else { return }
             self.subscribedToPlayerState = false
-            self.updatePlayerStateSubscriptionButtonState()
         }
-    }
-
-    fileprivate func toggleRepeatMode() {
-        guard let playerState = playerState else { return }
-        let repeatMode: SPTAppRemotePlaybackOptionsRepeatMode = {
-            switch playerState.playbackOptions.repeatMode {
-                case .off: return SPTAppRemotePlaybackOptionsRepeatMode.track
-                case .track: return SPTAppRemotePlaybackOptionsRepeatMode.context
-                case .context: return SPTAppRemotePlaybackOptionsRepeatMode.off
-            }
-        }()
-
-        appRemote.playerAPI?.setRepeatMode(repeatMode, callback: defaultCallback)
     }
 
     // MARK: - User API
     fileprivate var subscribedToCapabilities: Bool = false
-
-    fileprivate func fetchUserCapabilities() {
-        appRemote.userAPI?.fetchCapabilities(callback: { (capabilities, error) in
-            guard error == nil else { return }
-
-            let capabilities = capabilities as! SPTAppRemoteUserCapabilities
-            self.updateViewWithCapabilities(capabilities)
-        })
-    }
 
     fileprivate func subscribeToCapabilityChanges() {
         guard (!subscribedToCapabilities) else { return }
@@ -361,7 +279,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
             guard error == nil else { return }
 
             self.subscribedToCapabilities = true
-            self.updateCapabilitiesSubscriptionButtonState()
         })
     }
 
@@ -371,28 +288,7 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
             guard error == nil else { return }
 
             self.subscribedToCapabilities = false
-            self.updateCapabilitiesSubscriptionButtonState()
         })
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0{
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height
-            }
-        }
     }
     
     func connectToSpotify() {
@@ -416,20 +312,17 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
 // MARK: - UI
 private extension HomeViewController {
     func updateView() {
-        addSubviews([spotifyConnectButton])
-        setupNavigationBar()
+        view.backgroundColor = .black
+        addSubviews([spotifyConnectButton, playerView])
         setupPlayerView()
         setupSpotifyConnectButton()
+        setupMapView()
     }
     
     func addSubviews(_ subviews: [UIView]) {
         subviews.forEach{ view.addSubview($0) }
     }
 
-    func setupNavigationBar() {
-        navigationItem.titleView = searchBar
-    }
-    
     func setupSpotifyConnectButton() {
         NSLayoutConstraint.activate([
             spotifyConnectButton.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -437,6 +330,26 @@ private extension HomeViewController {
             spotifyConnectButton.rightAnchor.constraint(equalTo: view.rightAnchor),
             spotifyConnectButton.heightAnchor.constraint(equalToConstant: 72)
         ])
+    }
+    
+    func setupMapView() {
+        addChild(mapViewController)
+        view.addSubview(mapViewController.view)
+        mapViewController.didMove(toParent: self)
+        mapViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            mapViewController.view.bottomAnchor.constraint(equalTo: playerView.topAnchor, constant: 0),
+            mapViewController.view.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            mapViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            mapViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+        ])
+    }
+    
+    func setupPlayerView() {
+        playerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        playerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        playerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        playerView.heightAnchor.constraint(equalToConstant: 72).isActive = true
     }
 }
 
@@ -453,7 +366,6 @@ extension HomeViewController: SPTAppRemotePlayerStateDelegate {
 extension HomeViewController: SPTAppRemoteUserAPIDelegate {
     
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
-        updateViewWithCapabilities(capabilities)
     }
     
     func showError(_ errorDescription: String) {
@@ -475,6 +387,7 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
         spotifyConnectButton.isHidden = true
         playerView.isHidden = false
         enableInterface(true)
+
     }
     
     func appRemoteDisconnect() {
@@ -530,6 +443,7 @@ extension HomeViewController: PlayerViewDelegate {
     }
 }
 
+// MARK: - PlayButtonDelegate
 extension HomeViewController: PlayButtonDelegate {
     func playButton(_ button: UIButton, isPaused: Bool) {
         let playPauseButtonImage = isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
@@ -538,14 +452,28 @@ extension HomeViewController: PlayButtonDelegate {
     }
 }
 
-extension HomeViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("🤶\(#function)")
-    }
-}
-
+// MARK: - SpotifyConnectButtonDelegate
 extension HomeViewController: SpotifyConnectButtonDelegate {
     @objc func spotifyConnectButtonTapped(_ button: SpotifyConnectButton) {
         connectToSpotify()
+    }
+}
+
+// Move view with keyboard presentation
+extension HomeViewController {
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y == 0{
+                self.view.frame.origin.y -= keyboardSize.height
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.view.frame.origin.y != 0{
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ import UIKit
 protocol PlayButtonDelegate: class {
     func playButton(_ button: UIButton, isPaused: Bool)
 }
+
 extension PlayButtonDelegate {
     func playButton(_ button: UIButton, isPaused: Bool) {
         let playPauseButtonImage = isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
@@ -18,6 +19,8 @@ extension PlayButtonDelegate {
         button.setImage(playPauseButtonImage, for: .highlighted)
     }
 }
+
+extension UIButton: PlayButtonDelegate {}
 
 protocol PlayerViewDelegate: class {
     func playerView(_ view: PlayerView, playButtonTapped: UIButton)
@@ -42,12 +45,15 @@ class PlayerView: UIView {
     lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [addSongToSpotifyButton, playButton])
         stackView.axis = .horizontal
+        stackView.spacing = 16
         return stackView
     }()
     
     lazy var addSongToSpotifyButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("+", for: .normal)
+//        button.setTitle("+", for: .normal)
+        //https://www.flaticon.com/authors/balraj-chana
+        button.setImage(UIImage(named: "add"), for: .normal)
         button.addTarget(self, action: #selector(addSongToSpotifyButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -158,21 +164,26 @@ private extension PlayerView {
     func setupView() {
         backgroundColor = UIColor.Theme.primaryBackground
         
-        addSubviews([albumArtImageView, songInfoStackView, buttonStackView, durationView])
+        addSubviews([albumArtImageView, songInfoStackView, playButton, addSongToSpotifyButton, durationView])
         
         albumArtImageViewConstraints()
         songInfoConstraints()
-//        playButtonConstraints()
-        buttonConstraints()
+        playButtonConstraints()
+        addSongToSpotifyButtonConstraints()
+        //buttonStackViewConstraints()
         durationViewConstraints()
-    }
+        
+        addSongToSpotifyButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        addSongToSpotifyButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+//        addSongToSpotifyButton.isHidden = true
+        }
 
     func songInfoConstraints() {
         songInfoStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             songInfoStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             songInfoStackView.leftAnchor.constraint(equalTo: albumArtImageView.rightAnchor, constant: 16),
-            songInfoStackView.rightAnchor.constraint(equalTo: playButton.leftAnchor, constant: -16),
+            songInfoStackView.rightAnchor.constraint(equalTo: addSongToSpotifyButton.leftAnchor, constant: -16),
         ])
     }
     
@@ -193,10 +204,22 @@ private extension PlayerView {
         playButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     
-    func buttonConstraints() {
+    func addSongToSpotifyButtonConstraints() {
+        addSongToSpotifyButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            addSongToSpotifyButton.rightAnchor.constraint(equalTo: playButton.leftAnchor, constant: -16),
+            addSongToSpotifyButton.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+    
+    func buttonStackViewConstraints() {
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
-        buttonStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -16).isActive = true
-        buttonStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            buttonStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            buttonStackView.topAnchor.constraint(equalTo: topAnchor),
+            buttonStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            buttonStackView.rightAnchor.constraint(equalTo: rightAnchor, constant: -16),
+       ])
     }
     
     func durationViewConstraints() {

@@ -62,15 +62,7 @@ class MapViewController: UIViewController, AVAudioPlayerDelegate {
         
         setupAuthorizedLocation()
         
-        view.addSubview(mapView)
-        view.addSubview(userTrackingButton)
-        NSLayoutConstraint.activate([
-            userTrackingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            userTrackingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
-        ])
-        
-        mapView.register(PersonAnnotationView.self, forAnnotationViewWithReuseIdentifier: PersonAnnotationView.ReuseID)
-        mapView.register(ClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
+        updateView()
 
         fetchUsers()
     }
@@ -141,6 +133,35 @@ class MapViewController: UIViewController, AVAudioPlayerDelegate {
 
 }
 
+// MARK: - UI
+extension MapViewController {
+    func updateView() {
+        addSubviews([mapView, userTrackingButton])
+        
+        setupMapView()
+        setupUserTrackingButton()
+    }
+    
+    func addSubviews(_ subviews: [UIView]) {
+        subviews.forEach{ view.addSubview($0) }
+    }
+    
+    func setupMapView() {
+        
+        mapView.register(PersonAnnotationView.self, forAnnotationViewWithReuseIdentifier: PersonAnnotationView.ReuseID)
+        mapView.register(ClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
+    }
+    
+    func setupUserTrackingButton() {
+        NSLayoutConstraint.activate([
+            userTrackingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            userTrackingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -16),
+            ])
+        
+    }
+}
+
+// MARK: - MKMapViewDelegate
 extension MapViewController: MKMapViewDelegate {
     func setupAuthorizedLocation() {
         // Ask for Authorisation from the User.
@@ -171,7 +192,20 @@ extension MapViewController: MKMapViewDelegate {
         let personAnnotationView = PersonAnnotationView(annotation: annotation, reuseIdentifier: PersonAnnotationView.ReuseID)
         personAnnotationView.delegate = self
         
-        return personAnnotationView
+        if let song = annotation.song {
+        
+            if PlayerStateController.shared.state?.track.uri == song.spotifyUri {
+                guard let homeVC = parent as? HomeViewController else { return nil }
+                
+                personAnnotationView.playButton.imageView?.image = homeVC.playerView.playButton.imageView?.image
+                
+                guard let isPaused = homeVC.playerState?.isPaused else { return nil }
+                playButton(personAnnotationView.playButton, updatePlayButtonState: isPaused)
+            }
+            return personAnnotationView
+        } else {
+            return personAnnotationView
+        }
     }
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
@@ -180,22 +214,15 @@ extension MapViewController: MKMapViewDelegate {
         guard let user = annotation.user else { return }
         guard let song = annotation.song else { return }
         
-        personAnnotationView.delegate = self
         if PlayerStateController.shared.state?.track.uri == song.spotifyUri {
-            playButton(personAnnotationView.playButton, isPaused: false)
-        }
-        
-        print(user.uid)
-        print(song.title)
-    }
-    
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        guard let homeVC = self.parent as? HomeViewController else { return }
-        if homeVC.searchBar.isFirstResponder {
-            homeVC.searchBar.resignFirstResponder()
+            guard let homeVC = parent as? HomeViewController else { return }
+            
+            personAnnotationView.playButton.imageView?.image = homeVC.playerView.playButton.imageView?.image
+            
+            guard let isPaused = homeVC.playerState?.isPaused else { return }
+            playButton(personAnnotationView.playButton, updatePlayButtonState: isPaused)
         }
     }
-
 }
 
 extension String {
