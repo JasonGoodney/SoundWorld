@@ -82,6 +82,7 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: connectionIndicatorView)
         connectionIndicatorView.frame = CGRect(origin: CGPoint(), size: CGSize(width: 20,height: 20))
+        navigationController?.navigationBar.isHidden = true
     }
     
     // MARK: - View
