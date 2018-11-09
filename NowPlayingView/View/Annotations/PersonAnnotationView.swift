@@ -17,21 +17,9 @@ class PersonAnnotationView: MKMarkerAnnotationView {
     
     weak var delegate: PersonAnnotationViewDelegate?
     
-//    lazy var playButton: UIButton = {
-//        let button = UIButton(type: .system)
-//        button.addTarget(self, action: #selector(playButtonTapped(_:)), for: .touchUpInside)
-//        button.setImage(PlaybackButtonGraphics.playButtonImage(), for: .normal)
-//        button.setImage(PlaybackButtonGraphics.playButtonImage(), for: .highlighted)
-//        button.tintColor = .black
-//        return button
-//    }()
-    
-    
     lazy var playButton: UIButton = {
-        let button = UIButton(type: .detailDisclosure)
+        let button = UIButton(type: UIButton.ButtonType.detailDisclosure)
         button.addTarget(self, action: #selector(playButtonTapped(_:)), for: .touchUpInside)
-        button.setImage(PlaybackButtonGraphics.playButtonImage(), for: .normal)
-        button.setImage(PlaybackButtonGraphics.playButtonImage(), for: .highlighted)
         button.tintColor = UIColor.Theme.primaryBackground
         return button
     }()
@@ -48,16 +36,7 @@ class PersonAnnotationView: MKMarkerAnnotationView {
         rightCalloutAccessoryView = playButton
 
         titleVisibility = .hidden
-        subtitleVisibility = .hidden
-
-        let pinImage = UIImage(named: "mapPin")
-        let size = CGSize(width: 30, height: 30)
-        UIGraphicsBeginImageContext(size)
-        pinImage?.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-        let resizeImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-//        image = resizeImage
-        
+        subtitleVisibility = .hidden        
     }
 
     required init?(coder aDecoder: NSCoder) {

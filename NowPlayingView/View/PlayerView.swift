@@ -46,7 +46,6 @@ class PlayerView: UIView {
     
     lazy var addSongToSpotifyButton: UIButton = {
         let button = UIButton(type: .system)
-//        button.setTitle("+", for: .normal)
         button.setImage(UIImage(named: "plus"), for: .normal)
         button.addTarget(self, action: #selector(addSongToSpotifyButtonTapped), for: .touchUpInside)
         button.tintColor = UIColor.Theme.primary
@@ -166,6 +165,8 @@ private extension PlayerView {
         buttonConstraints()
         durationViewConstraints()
         addSongToSpotifyButtonConstraints()
+        
+        addSongToSpotifyButton.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 
     func songInfoConstraints() {
@@ -212,8 +213,8 @@ private extension PlayerView {
         NSLayoutConstraint.activate([
             addSongToSpotifyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             addSongToSpotifyButton.rightAnchor.constraint(equalTo: buttonStackView.leftAnchor, constant: -20),
-            addSongToSpotifyButton.heightAnchor.constraint(equalToConstant: 20),
-            addSongToSpotifyButton.widthAnchor.constraint(equalToConstant: 20),
+            addSongToSpotifyButton.heightAnchor.constraint(equalToConstant: 44),
+            addSongToSpotifyButton.widthAnchor.constraint(equalToConstant: 44),
         ])
     }
 }

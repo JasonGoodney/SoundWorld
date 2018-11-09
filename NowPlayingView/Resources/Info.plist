@@ -30,7 +30,6 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>comjtgnowplaying</string>
-				<string>spotify</string>
 			</array>
 		</dict>
 	</array>
@@ -39,6 +38,9 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>spotify</string>
+		<string>flickr</string>
+		<string>maps</string>
+		<string>fb</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

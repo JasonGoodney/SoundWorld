@@ -3,7 +3,7 @@ import StoreKit
 import MapKit
 import FirebaseAuth
 
-class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate {
+class HomeViewController: UIViewController, StoreKitOpenable {
 
     // MARK: - Properties
     private let databaseManager = DatabaseManager()
@@ -34,7 +34,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     }()
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        searchBar.delegate = self
         searchBar.placeholder = "Search artist, song, or genre."
         return searchBar
     }()
@@ -42,6 +41,12 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     // MARK: - Lifecycle
 
     fileprivate var connectionIndicatorView = ConnectionStatusIndicatorView()
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        isSpotifyInstalled()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -162,6 +167,18 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         }
     }
     
+    func isSpotifyInstalled() -> Bool {
+        if !UIApplication.shared.canOpenURL(URL(string: "spotify://")!) {
+            print("🎹 NOT installed")
+            spotifyConnectButton.setTitle("Install Spotify", for: .normal)
+            return false
+        } else {
+            print("🎹 IS installed")
+            spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
+            return true
+        }
+    }
+    
     var timer: Timer?
     func runProgress(_ duration: Float) {
         
@@ -211,41 +228,6 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
         }
     }
 
-    fileprivate func presentAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    // MARK: StoreKit
-
-    fileprivate func showAppStoreInstall() {
-        if TARGET_OS_SIMULATOR != 0 {
-            presentAlert(title: "Simulator In Use", message: "The App Store is not available in the iOS simulator, please test this feature on a physical device.")
-        } else {
-            let loadingView = UIActivityIndicatorView(frame: view.bounds)
-            view.addSubview(loadingView)
-            loadingView.startAnimating()
-            loadingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-            let storeProductViewController = SKStoreProductViewController()
-            storeProductViewController.delegate = self
-            storeProductViewController.loadProduct(withParameters: [SKStoreProductParameterITunesItemIdentifier: SPTAppRemote.spotifyItunesItemIdentifier()], completionBlock: { (success, error) in
-                loadingView.removeFromSuperview()
-                if let error = error {
-                    self.presentAlert(
-                        title: "Error accessing App Store",
-                        message: error.localizedDescription)
-                } else {
-                    self.present(storeProductViewController, animated: true, completion: nil)
-                }
-            })
-        }
-    }
-
-    public func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
-        viewController.dismiss(animated: true, completion: nil)
-    }
-    
     var appRemote: SPTAppRemote {
         get {
             return AppDelegate.sharedInstance.appRemote
@@ -261,7 +243,11 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     }
 
     fileprivate func startPlayback() {
-        appRemote.playerAPI?.resume(defaultCallback)
+        if playerState == nil {
+            appRemote.playerAPI?.play("", callback: defaultCallback)
+        } else {
+            appRemote.playerAPI?.resume(defaultCallback)
+        }
     }
 
     fileprivate func pausePlayback() {
@@ -301,13 +287,14 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
     }
 
     func playTrackWithUri(_ uri: String) {
+        
         if PlayerStateController.shared.state?.track.uri == uri {
             return
         }
         if !(appRemote.isConnected) {
             if (!appRemote.authorizeAndPlayURI(uri)) {
                 // The Spotify app is not installed, present the user with an App Store page
-                showAppStoreInstall()
+                StoreKitManager.showAppStoreInstall(from: self)
             }
         }
         
@@ -410,7 +397,7 @@ class HomeViewController: UIViewController, SKStoreProductViewControllerDelegate
             getPlayerState()
             if (!appRemote.authorizeAndPlayURI(playURI)) {
                 // The Spotify app is not installed, present the user with an App Store page
-                showAppStoreInstall()
+                StoreKitManager.showAppStoreInstall(from: self)
             }
         } else if playerState == nil || playerState!.isPaused {
             startPlayback()
@@ -543,6 +530,7 @@ extension HomeViewController: PlayerViewDelegate {
     }
 }
 
+// MARK: - PlayButtonDelegate
 extension HomeViewController: PlayButtonDelegate {
     func playButton(_ button: UIButton, isPaused: Bool) {
         let playPauseButtonImage = isPaused ? PlaybackButtonGraphics.playButtonImage() : PlaybackButtonGraphics.pauseButtonImage()
@@ -551,14 +539,20 @@ extension HomeViewController: PlayButtonDelegate {
     }
 }
 
-extension HomeViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("🤶\(#function)")
-    }
-}
-
+// MARK: - SpotifyConnectButtonDelegate
 extension HomeViewController: SpotifyConnectButtonDelegate {
     @objc func spotifyConnectButtonTapped(_ button: SpotifyConnectButton) {
         connectToSpotify()
+    }
+}
+
+// MARK: - SKStoreProductViewControllerDelegate
+extension HomeViewController: SKStoreProductViewControllerDelegate {
+    func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
+        
+        viewController.dismiss(animated: true) {
+            self.isSpotifyInstalled()
+        }
+//        self.isSpotifyInstalled()
     }
 }

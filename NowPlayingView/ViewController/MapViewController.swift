@@ -12,8 +12,9 @@ import CoreLocation
 import AVFoundation
 import FirebaseAuth
 import FirebaseDatabase
+import StoreKit
 
-class MapViewController: UIViewController, AVAudioPlayerDelegate {
+class MapViewController: UIViewController, AVAudioPlayerDelegate, StoreKitOpenable {
     
     // MARK: - Properties
     var annotionsDictionary: [String: Annotation] = [:]
@@ -181,9 +182,9 @@ extension MapViewController: MKMapViewDelegate {
         guard let song = annotation.song else { return }
         
         personAnnotationView.delegate = self
-        if PlayerStateController.shared.state?.track.uri == song.spotifyUri {
-            playButton(personAnnotationView.playButton, isPaused: false)
-        }
+//        if PlayerStateController.shared.state?.track.uri == song.spotifyUri {
+//            playButton(personAnnotationView.playButton, isPaused: false)
+//        }
         
         print(user.uid)
         print(song.title)
@@ -220,11 +221,15 @@ extension MapViewController: CLLocationManagerDelegate {
 
 extension MapViewController: PersonAnnotationViewDelegate {
     func personAnnotationView(_ view: PersonAnnotationView, playButtonTapped button: UIButton) {
+        if !AppDelegate.sharedInstance.appRemote.isConnected {
+            StoreKitManager.showAppStoreInstall(from: self)
+        }
+        
         guard let annotation = view.annotation as? Annotation else { return }
         guard let song = annotation.song else { return }
         guard let uri = song.spotifyUri else { return }
 //        view.updatePlayButton()
-        playButton(view.playButton, isPaused: song.isPaused)
+//        playButton(view.playButton, isPaused: song.isPaused)
         let vc = HomeViewController()
         vc.trackIdentifier = uri
     }
@@ -236,6 +241,14 @@ extension MapViewController: PlayButtonDelegate {
 //        button.setImage(playPauseButtonImage, for: UIControl.State())
 //        button.setImage(playPauseButtonImage, for: .highlighted)
 //    }
+}
+
+extension MapViewController: SKStoreProductViewControllerDelegate {
+    func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
+        viewController.dismiss(animated: true) {
+            //self.isSpotifyInstalled()
+        }
+    }
 }
 
 
