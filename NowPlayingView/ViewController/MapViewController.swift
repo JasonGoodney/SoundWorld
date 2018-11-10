@@ -128,6 +128,7 @@ class MapViewController: UIViewController, AVAudioPlayerDelegate, StoreKitOpenab
         annotation.user = user
         annotation.song = song
         
+        
         self.mapView.addAnnotation(annotation)
         annotionsDictionary[user.uid] = annotation
     }
