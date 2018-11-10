@@ -14,13 +14,9 @@ class StoreKitManager {
     
     static func showAppStoreInstall<T: UIViewController & StoreKitOpenable & SKStoreProductViewControllerDelegate>(from viewController: T) {
         
-        if TARGET_OS_SIMULATOR != 0 {
-            viewController.presentAlert(title: "Simulator In Use", message: "The App Store is not available in the iOS simulator, please test this feature on a physical device.")
-        } else {
-            viewController.presentAlertWithCancel(title: "Install Spotify", message: "SoundWorld plays music with Spotify. Install Spotify to play.", okCompletion: { _ in
-                StoreKitManager.presentAppStoreToSpotifyInstall(from: viewController)
-            })
-        }
+        viewController.presentInstallAlert(title: "Install Spotify", message: "SoundWorld plays music with Spotify. Install Spotify to play.", okCompletion: { _ in
+            StoreKitManager.presentAppStoreToSpotifyInstall(from: viewController)
+        })
     }
     
     private static func presentAppStoreToSpotifyInstall<T: UIViewController & StoreKitOpenable & SKStoreProductViewControllerDelegate>(from viewController: T) {

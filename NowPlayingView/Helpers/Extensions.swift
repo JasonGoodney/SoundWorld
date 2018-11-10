@@ -32,9 +32,9 @@ extension UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
-    func presentAlertWithCancel(title: String, message: String, okCompletion: @escaping (UIAlertAction) -> Void) {
+    func presentInstallAlert(title: String, message: String, okCompletion: @escaping (UIAlertAction) -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: okCompletion))
+        alert.addAction(UIAlertAction(title: "Install", style: .default, handler: okCompletion))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
