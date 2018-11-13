@@ -89,7 +89,9 @@ class MapViewController: UIViewController, AVAudioPlayerDelegate, StoreKitOpenab
                     }
                     
                     DispatchQueue.main.async {
-                        if user.uid != AuthManager.shared.uid {
+                        if user.uid == AuthManager.shared.uid {
+                            return
+                        } else {
                             let coord = CLLocationCoordinate2D(latitude: user.latitude, longitude: user.longitude)
                             self.createAnnotion(forUser: user, song: song!, at: coord)
                         }
@@ -111,11 +113,7 @@ class MapViewController: UIViewController, AVAudioPlayerDelegate, StoreKitOpenab
         
         completion(nil)
     }
-    
-    @objc func refreshButtonTapped() {
-        fetchUsers()
-    }
-    
+
     func updateAnnotation(_ annotation: Annotation, with title: String, subtitle: String) {
         annotation.title = title
         annotation.subtitle = subtitle
