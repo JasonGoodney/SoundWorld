@@ -19,12 +19,7 @@ class AppDelegate: UIResponder,
         }
     }
     
-    var playerViewController: HomeViewController {
-        get {
-            let navController = self.window?.rootViewController as! UINavigationController
-            return navController.topViewController as! HomeViewController
-        }
-    }
+    var homeViewController =  HomeViewController()
     
     var window: UIWindow?
 
@@ -46,8 +41,10 @@ class AppDelegate: UIResponder,
         
         FirebaseApp.configure()
         
-        UINavigationBar.appearance().isTranslucent = true
-
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = homeViewController
+        window?.makeKeyAndVisible()
+    
         return true
     }
     
@@ -58,14 +55,14 @@ class AppDelegate: UIResponder,
             appRemote.connectionParameters.accessToken = access_token
             self.accessToken = access_token
         } else if let error_description = parameters?[SPTAppRemoteErrorDescriptionKey] {
-            playerViewController.showError(error_description);
+            homeViewController.showError(error_description);
         }
 
         return true
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
-        playerViewController.appRemoteDisconnect()
+        homeViewController.appRemoteDisconnect()
         appRemote.disconnect()
     }
     
@@ -74,7 +71,7 @@ class AppDelegate: UIResponder,
     }
 
     func connect() {
-        playerViewController.appRemoteConnecting()
+        homeViewController.appRemoteConnecting()
         appRemote.connect()
     }
 
@@ -82,17 +79,17 @@ class AppDelegate: UIResponder,
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
         self.appRemote = appRemote
-        playerViewController.appRemoteConnected()
+        homeViewController.appRemoteConnected()
     }
     
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("didFailConnectionAttemptWithError")
-        playerViewController.appRemoteDisconnect()
+        homeViewController.appRemoteDisconnect()
     }
     
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
         print("didDisconnectWithError")
-        playerViewController.appRemoteDisconnect()
+        homeViewController.appRemoteDisconnect()
     }
 
 }

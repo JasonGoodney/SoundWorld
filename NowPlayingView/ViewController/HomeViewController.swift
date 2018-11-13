@@ -13,11 +13,11 @@ class HomeViewController: UIViewController, StoreKitOpenable {
             playTrackWithUri(trackIdentifier)
         }
     }
-    let userDefaults = UserDefaults.standard
-    fileprivate let name = "Now Playing View"
     fileprivate var currentlyPlayingSong: Song?
     fileprivate var isDurationInProgress = false
     
+    // MARK: - Subviews
+    fileprivate var connectionIndicatorView = ConnectionStatusIndicatorView()
     let mapViewController = MapViewController()
     lazy var playerView: PlayerView = {
         let view = PlayerView(frame: .zero)
@@ -32,16 +32,13 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
-    lazy var searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.placeholder = "Search artist, song, or genre."
-        return searchBar
+    lazy var settingsButton: UIBarButtonItem = {
+        let button = UIBarButtonItem()
+        button.image = UIImage(named: "settingsCog")
+        return button
     }()
-
+    
     // MARK: - Lifecycle
-
-    fileprivate var connectionIndicatorView = ConnectionStatusIndicatorView()
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -91,9 +88,6 @@ class HomeViewController: UIViewController, StoreKitOpenable {
             }
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: connectionIndicatorView)
-        connectionIndicatorView.frame = CGRect(origin: CGPoint(), size: CGSize(width: 20,height: 20))
-        navigationController?.navigationBar.isHidden = true
     }
     
     // MARK: - View
@@ -154,8 +148,6 @@ class HomeViewController: UIViewController, StoreKitOpenable {
     func updateProgressView(_ playerState: SPTAppRemotePlayerState) {
         let durationSeconds = Float(playerState.track.duration) / 1000
         let playbackPosition = Float(playerState.playbackPosition) / 1000
-
-        print("Seconds:", Float(playerState.playbackPosition / 1000))
         
         playerView.durationView.maximumValue = durationSeconds
         playerView.durationView.value = playbackPosition
@@ -406,13 +398,19 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 private extension HomeViewController {
     func updateView() {
         view.addSubviews([spotifyConnectButton])
-        setupNavigationBar()
         setupPlayerView()
         setupSpotifyConnectButton()
+        setupBlurStatusBar()
     }
-
-    func setupNavigationBar() {
-        navigationItem.titleView = searchBar
+    
+    func setupBlurStatusBar() {
+        let statWindow = UIApplication.shared.value(forKey:"statusBarWindow") as! UIView
+        let statusBar = statWindow.subviews[0] as UIView
+        statusBar.backgroundColor = UIColor.clear
+        let blur = UIBlurEffect(style: .regular)
+        let visualeffect = UIVisualEffectView(effect: blur)
+        visualeffect.frame = statusBar.frame
+        self.view.addSubview(visualeffect)
     }
     
     func setupSpotifyConnectButton() {
@@ -552,3 +550,4 @@ extension HomeViewController: SKStoreProductViewControllerDelegate {
 //        self.isSpotifyInstalled()
     }
 }
+

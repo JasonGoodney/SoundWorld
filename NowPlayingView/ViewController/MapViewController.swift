@@ -188,13 +188,6 @@ extension MapViewController: MKMapViewDelegate {
         print(user.uid)
         print(song.title)
     }
-    
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
-        guard let homeVC = self.parent as? HomeViewController else { return }
-        if homeVC.searchBar.isFirstResponder {
-            homeVC.searchBar.resignFirstResponder()
-        }
-    }
 
 }
 

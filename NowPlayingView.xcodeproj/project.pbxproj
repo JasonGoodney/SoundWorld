@@ -29,7 +29,6 @@
 		D7787A92218D62F300FC1C99 /* Data.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7787A91218D62F300FC1C99 /* Data.plist */; };
 		D7787A94218D6FDE00FC1C99 /* UserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7787A93218D6FDE00FC1C99 /* UserController.swift */; };
 		D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7997CDC21909F170087118C /* PlayerStateController.swift */; };
-		D7997CDF2190EDD20087118C /* BlurNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7997CDE2190EDD20087118C /* BlurNavigationController.swift */; };
 		D7ED2A06218DFC8A00B22FB0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7ED2A05218DFC8A00B22FB0 /* GoogleService-Info.plist */; };
 		D7ED2A08218E0F7900B22FB0 /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ED2A07218E0F7900B22FB0 /* LocationController.swift */; };
 		D7FFE49121921345009E41E7 /* Stylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FFE49021921345009E41E7 /* Stylesheet.swift */; };
@@ -69,7 +68,6 @@
 		D7787A91218D62F300FC1C99 /* Data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Data.plist; sourceTree = "<group>"; };
 		D7787A93218D6FDE00FC1C99 /* UserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserController.swift; sourceTree = "<group>"; };
 		D7997CDC21909F170087118C /* PlayerStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStateController.swift; sourceTree = "<group>"; };
-		D7997CDE2190EDD20087118C /* BlurNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurNavigationController.swift; sourceTree = "<group>"; };
 		D7ED2A05218DFC8A00B22FB0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D7ED2A07218E0F7900B22FB0 /* LocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
 		D7FFE49021921345009E41E7 /* Stylesheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stylesheet.swift; sourceTree = "<group>"; };
@@ -226,7 +224,6 @@
 				D7FFE48F219210C0009E41E7 /* Controllers */,
 				D7787A8A218D48B200FC1C99 /* Networking */,
 				F6EB42E21D2BB0D800F57322 /* ContentCollectionViewController.swift */,
-				D7997CDE2190EDD20087118C /* BlurNavigationController.swift */,
 				99A0FFE31D38F9B600A90453 /* PlaybackButtonGraphics.swift */,
 				D7FFE48E2192107B009E41E7 /* Resources */,
 			);
@@ -390,7 +387,6 @@
 				D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */,
 				D7787A8D218D48B200FC1C99 /* AuthManager.swift in Sources */,
 				D715688921962E7600C86879 /* StoreKitManager.swift in Sources */,
-				D7997CDF2190EDD20087118C /* BlurNavigationController.swift in Sources */,
 				F4F973F21CAD60320036411D /* HomeViewController.swift in Sources */,
 				D7FFE49321923872009E41E7 /* SpotifyManager.swift in Sources */,
 				D70353FB2193584700751B0C /* SpotifyConnectButton.swift in Sources */,

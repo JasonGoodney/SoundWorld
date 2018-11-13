@@ -72,7 +72,7 @@ class PlayerView: UIView {
     
     private let songNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.textColor = UIColor.Theme.primary
         return label
     }()
@@ -212,7 +212,7 @@ private extension PlayerView {
         addSongToSpotifyButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             addSongToSpotifyButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            addSongToSpotifyButton.rightAnchor.constraint(equalTo: buttonStackView.leftAnchor, constant: -20),
+            addSongToSpotifyButton.rightAnchor.constraint(equalTo: buttonStackView.leftAnchor, constant: -16),
             addSongToSpotifyButton.heightAnchor.constraint(equalToConstant: 44),
             addSongToSpotifyButton.widthAnchor.constraint(equalToConstant: 44),
         ])
