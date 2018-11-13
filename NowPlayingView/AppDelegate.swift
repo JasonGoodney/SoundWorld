@@ -65,7 +65,6 @@ class AppDelegate: UIResponder,
         
         UINavigationBar.appearance().isTranslucent = true
 
-        
         return true
     }
     
