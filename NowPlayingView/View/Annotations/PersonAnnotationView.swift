@@ -18,7 +18,9 @@ class PersonAnnotationView: MKMarkerAnnotationView {
     weak var delegate: PersonAnnotationViewDelegate?
     
     lazy var playButton: UIButton = {
-        let button = UIButton(type: UIButton.ButtonType.detailDisclosure)
+        let button = UIButton(type: .infoLight)
+        button.setImage(UIImage(named: "rightArrowRounded"), for: .normal)
+        button.setImage(UIImage(named: "rightArrowRounded"), for: .highlighted)
         button.addTarget(self, action: #selector(playButtonTapped(_:)), for: .touchUpInside)
         button.tintColor = UIColor.Theme.primaryBackground
         return button
