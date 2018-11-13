@@ -12,6 +12,15 @@ protocol StoreKitOpenable: class {}
 
 class StoreKitManager {
     
+    static func isSpotifyInstalled() -> Bool {
+        if !UIApplication.shared.canOpenURL(URL(string: "spotify://")!) {
+            print("🎹 NOT installed")
+            return false
+        }
+        
+        return true
+    }
+    
     static func showAppStoreInstall<T: UIViewController & StoreKitOpenable & SKStoreProductViewControllerDelegate>(from viewController: T) {
         
         viewController.presentInstallAlert(title: "Install Spotify", message: "SoundWorld plays music with Spotify. Install Spotify to play.", okCompletion: { _ in

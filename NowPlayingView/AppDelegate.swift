@@ -5,8 +5,8 @@ import Firebase
 class AppDelegate: UIResponder,
     UIApplicationDelegate, SPTAppRemoteDelegate {
 
-    fileprivate let clientIdentifier = "bcf18acff440420bbcd8978d2f56639f"
-    fileprivate let redirectUri = URL(string:"comjtgnowplaying://")!
+    fileprivate let clientIdentifier = "ed9a8be7fdd347ea948bb408e580ab3b"
+    fileprivate let redirectUri = URL(string:"comjtgwesongs://")!
 
     // keys
     static fileprivate let kAccessTokenKey = "access-token-key"

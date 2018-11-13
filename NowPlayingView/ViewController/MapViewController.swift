@@ -222,9 +222,13 @@ extension MapViewController: CLLocationManagerDelegate {
 
 extension MapViewController: PersonAnnotationViewDelegate {
     func personAnnotationView(_ view: PersonAnnotationView, playButtonTapped button: UIButton) {
-        if !AppDelegate.sharedInstance.appRemote.isConnected {
-            StoreKitManager.showAppStoreInstall(from: self)
-        }
+//        if StoreKitManager.isSpotifyInstalled() {
+//            if !AppDelegate.sharedInstance.appRemote.isConnected {
+//                
+//            } else {
+//                StoreKitManager.showAppStoreInstall(from: self)
+//            }
+//        }
         
         guard let annotation = view.annotation as? Annotation else { return }
         guard let song = annotation.song else { return }

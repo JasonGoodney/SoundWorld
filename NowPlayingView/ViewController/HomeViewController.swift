@@ -45,7 +45,11 @@ class HomeViewController: UIViewController, StoreKitOpenable {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        isSpotifyInstalled()
+        if !StoreKitManager.isSpotifyInstalled() {
+            spotifyConnectButton.setTitle("Install Spotify", for: .normal)
+        } else {
+            spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
+        }
     }
 
     override func viewDidLoad() {
@@ -164,18 +168,6 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         if playerState.isPaused {
             timer?.invalidate()
             isDurationInProgress = false
-        }
-    }
-    
-    func isSpotifyInstalled() -> Bool {
-        if !UIApplication.shared.canOpenURL(URL(string: "spotify://")!) {
-            print("🎹 NOT installed")
-            spotifyConnectButton.setTitle("Install Spotify", for: .normal)
-            return false
-        } else {
-            print("🎹 IS installed")
-            spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
-            return true
         }
     }
     
@@ -551,7 +543,11 @@ extension HomeViewController: SKStoreProductViewControllerDelegate {
     func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
         
         viewController.dismiss(animated: true) {
-            self.isSpotifyInstalled()
+            if StoreKitManager.isSpotifyInstalled() {
+                self.spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
+            } else {
+                self.spotifyConnectButton.setTitle("Install Spotify", for: .normal)
+            }
         }
 //        self.isSpotifyInstalled()
     }
