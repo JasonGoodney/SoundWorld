@@ -139,6 +139,19 @@ class PlayerView: UIView {
         self.albumArtImageView.layer.add(transition, forKey: "transition")
     }
     
+    func disconnected() {
+        songNameLabel.text = "Connect to Spotify"
+        artistNameLabel.text = "Not Playing"
+        addSongToSpotifyButton.isHidden = true
+        albumArtImageView.image = UIImage(named: "logo")
+    }
+    
+    func connected() {
+        addSongToSpotifyButton.isHidden = false
+    }
+    
+
+    
     @objc private func playButtonTapped(_ sender: UIButton) {
         delegate?.playerView(self, playButtonTapped: sender)
     }

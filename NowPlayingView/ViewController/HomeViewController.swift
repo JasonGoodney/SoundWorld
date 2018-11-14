@@ -23,7 +23,7 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         let view = PlayerView(frame: .zero)
         view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true
+//        view.isHidden = true
         return view
     }()
     lazy var spotifyConnectButton: SpotifyConnectButton = {
@@ -456,9 +456,10 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
         subscribeToCapabilityChanges()
         getPlayerState()
         
-        spotifyConnectButton.isHidden = true
-        playerView.isHidden = false
+//        spotifyConnectButton.isHidden = true
+//        playerView.isHidden = false
         enableInterface(true)
+        playerView.connected()
     }
     
     func appRemoteDisconnect() {
@@ -466,6 +467,8 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
         self.subscribedToPlayerState = false
         self.subscribedToCapabilities = false
         enableInterface(false)
+        
+        playerView.disconnected()
     }
 
 }
