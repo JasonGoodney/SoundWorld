@@ -32,9 +32,11 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
-    lazy var settingsButton: UIBarButtonItem = {
-        let button = UIBarButtonItem()
-        button.image = UIImage(named: "settingsCog")
+    lazy var shareButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "shareRounded"), for: .normal)
+        button.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        button.tintColor = UIColor.Theme.primaryBackground
         return button
     }()
     
@@ -51,11 +53,6 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
         
         addChild(mapViewController)
         view.addSubview(mapViewController.view)
@@ -356,24 +353,13 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         })
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0{
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height
-            }
-        }
+    @objc func shareButtonTapped() {
+        guard let uri = playerState?.track.uri else { return }
+        let identifier = Array(uri.split(separator: ":"))[2]
+        let urlString = "https://open.spotify.com/track/\(identifier)"
+        let items = [URL(string: urlString)!]
+        let ac = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        present(ac, animated: true)
     }
     
     func connectToSpotify() {
@@ -397,8 +383,9 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 // MARK: - UI
 private extension HomeViewController {
     func updateView() {
-        view.addSubviews([spotifyConnectButton])
+        view.addSubviews([spotifyConnectButton, shareButton])
         setupPlayerView()
+        setupShareButton()
         setupSpotifyConnectButton()
         setupBlurStatusBar()
     }
@@ -420,6 +407,20 @@ private extension HomeViewController {
             spotifyConnectButton.rightAnchor.constraint(equalTo: view.rightAnchor),
             spotifyConnectButton.heightAnchor.constraint(equalToConstant: 72)
         ])
+    }
+    
+    func setupShareButton() {
+        let userTrackingButton = mapViewController.userTrackingButton
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            shareButton.bottomAnchor.constraint(equalTo: userTrackingButton.topAnchor, constant: -16),
+            shareButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -16),
+            shareButton.heightAnchor.constraint(equalToConstant: 36),
+            shareButton.widthAnchor.constraint(equalToConstant: 36),
+        ])
+        
+        shareButton.frame.size = userTrackingButton.frame.size
+        
     }
 }
 
