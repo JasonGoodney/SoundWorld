@@ -5,6 +5,13 @@ import FirebaseAuth
 
 class HomeViewController: UIViewController, StoreKitOpenable {
 
+    private var hasSafeArea: Bool {
+        guard #available(iOS 11.0, *), let topPadding = UIApplication.shared.keyWindow?.safeAreaInsets.top, topPadding > 24 else {
+            return false
+        }
+        return true
+    }
+    
     // MARK: - Properties
     private let databaseManager = DatabaseManager()
     fileprivate var playURI = ""
@@ -30,6 +37,7 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         let button = SpotifyConnectButton(frame: .zero)
         button.delegate = self
         button.addTarget(self, action: #selector(spotifyConnectButtonTapped(_:)), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     lazy var shareButton: UIButton = {
@@ -45,9 +53,9 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         super.viewWillAppear(animated)
         
         if !StoreKitManager.isSpotifyInstalled() {
-            spotifyConnectButton.setTitle("Install Spotify", for: .normal)
+            playerView.notInstalled()
         } else {
-            spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
+            playerView.disconnected()
         }
     }
 
@@ -130,14 +138,6 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         if (!enabled) {
             playButton(playerView.playButton, isPaused: true)
         }
-    }
-    
-    fileprivate func setupPlayerView() {
-        view.addSubview(playerView)
-        playerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
-        playerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
-        playerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        playerView.heightAnchor.constraint(equalToConstant: 72).isActive = true
     }
     
     // MARK: - Progress View
@@ -383,11 +383,20 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 // MARK: - UI
 private extension HomeViewController {
     func updateView() {
-        view.addSubviews([spotifyConnectButton, shareButton])
+        view.addSubviews([shareButton])
         setupPlayerView()
         setupShareButton()
-        setupSpotifyConnectButton()
+//        setupSpotifyConnectButton()
         setupBlurStatusBar()
+        view.backgroundColor = UIColor.Theme.primaryBackground
+    }
+    
+    func setupPlayerView() {
+        view.addSubview(playerView)
+        playerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        playerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        playerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        playerView.heightAnchor.constraint(equalToConstant: 72).isActive = true
     }
     
     func setupBlurStatusBar() {
@@ -420,7 +429,10 @@ private extension HomeViewController {
         ])
         
         shareButton.frame.size = userTrackingButton.frame.size
-        
+        shareButton.layer.shadowColor = UIColor.Theme.primary.cgColor
+        shareButton.layer.shadowOpacity = 1
+        shareButton.layer.shadowOffset = CGSize.zero
+        shareButton.layer.shadowRadius = 10
     }
 }
 
@@ -548,9 +560,9 @@ extension HomeViewController: SKStoreProductViewControllerDelegate {
         
         viewController.dismiss(animated: true) {
             if StoreKitManager.isSpotifyInstalled() {
-                self.spotifyConnectButton.setTitle("Connect To Spotify", for: .normal)
+                self.playerView.disconnected()
             } else {
-                self.spotifyConnectButton.setTitle("Install Spotify", for: .normal)
+                self.playerView.notInstalled()
             }
         }
 //        self.isSpotifyInstalled()

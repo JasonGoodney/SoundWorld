@@ -141,6 +141,11 @@ class PlayerView: UIView {
     
     func disconnected() {
         songNameLabel.text = "Connect to Spotify"
+        
+        if songNameLabel.isTruncated() {
+            songNameLabel.resizeIfNeeded()
+        }
+        
         artistNameLabel.text = "Not Playing"
         addSongToSpotifyButton.isHidden = true
         albumArtImageView.image = UIImage(named: "logo")
@@ -150,7 +155,12 @@ class PlayerView: UIView {
         addSongToSpotifyButton.isHidden = false
     }
     
-
+    func notInstalled() {
+        songNameLabel.text = "Install Spotify"
+        artistNameLabel.text = "Not Playing"
+        addSongToSpotifyButton.isHidden = true
+        albumArtImageView.image = UIImage(named: "logo")
+    }
     
     @objc private func playButtonTapped(_ sender: UIButton) {
         delegate?.playerView(self, playButtonTapped: sender)
@@ -187,7 +197,7 @@ private extension PlayerView {
         NSLayoutConstraint.activate([
             songInfoStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             songInfoStackView.leftAnchor.constraint(equalTo: albumArtImageView.rightAnchor, constant: 16),
-            songInfoStackView.rightAnchor.constraint(equalTo: addSongToSpotifyButton.leftAnchor, constant: -16),
+            songInfoStackView.rightAnchor.constraint(equalTo: addSongToSpotifyButton.leftAnchor, constant: 0),
         ])
     }
     
@@ -238,5 +248,26 @@ extension UIView {
             addSubview($0)
             
         }
+    }
+}
+
+extension UILabel {
+    
+    public func resizeIfNeeded() -> CGFloat? {
+        guard let text = text, !text.isEmpty else { return nil }
+        
+        if isTruncated() {
+            numberOfLines = 0
+            sizeToFit()
+            return frame.height
+        }
+        return nil
+    }
+    
+    func isTruncated() -> Bool {
+        guard let text = text, !text.isEmpty else { return false }
+        
+        let size: CGSize = text.size(withAttributes: [NSAttributedString.Key.font: font])
+        return size.width > self.bounds.size.width
     }
 }
