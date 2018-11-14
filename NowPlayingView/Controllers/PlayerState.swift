@@ -1,5 +1,5 @@
 //
-//  PlayerStateController.swift
+//  PlayerState.swift
 //  NowPlayingView
 //
 //  Created by Jason Goodney on 11/5/18.
@@ -8,9 +8,9 @@
 
 import Foundation
 
-class PlayerStateController {
+class PlayerState {
     
-    static let shared = PlayerStateController(); private init() {}
+    static let shared = PlayerState(); private init() {}
     
     var state: SPTAppRemotePlayerState?
 }

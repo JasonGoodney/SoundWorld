@@ -26,13 +26,17 @@ class HomeViewController: UIViewController, StoreKitOpenable {
     // MARK: - Subviews
     fileprivate var connectionIndicatorView = ConnectionStatusIndicatorView()
     let mapViewController = MapViewController()
-    lazy var playerView: PlayerView = {
-        let view = PlayerView(frame: .zero)
-        view.delegate = self
-        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.isHidden = true
-        return view
-    }()
+    let playerViewController = PlayerViewController()
+    var playerView: PlayerView {
+        return self.playerViewController.view as! PlayerView
+    }
+//    lazy var playerView: PlayerView = {
+//        let view = PlayerView(frame: .zero)
+//        view.delegate = self
+//        view.translatesAutoresizingMaskIntoConstraints = false
+////        view.isHidden = true
+//        return view
+//    }()
     lazy var spotifyConnectButton: SpotifyConnectButton = {
         let button = SpotifyConnectButton(frame: .zero)
         button.delegate = self
@@ -65,6 +69,10 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         addChild(mapViewController)
         view.addSubview(mapViewController.view)
         mapViewController.didMove(toParent: self)
+        
+        addChild(playerViewController)
+        view.addSubview(playerViewController.view)
+        playerViewController.didMove(toParent: self)
         
         updateView()
                 
@@ -260,7 +268,7 @@ class HomeViewController: UIViewController, StoreKitOpenable {
             guard error == nil else { return }
 
             let playerState = result as! SPTAppRemotePlayerState
-            PlayerStateController.shared.state = playerState
+            PlayerState.shared.state = playerState
 //            self.updateViewWithPlayerState(playerState)
             self.playURI = playerState.track.uri
             self.playerStateDidChange(playerState)
@@ -269,7 +277,7 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 
     func playTrackWithUri(_ uri: String) {
         
-        if PlayerStateController.shared.state?.track.uri == uri {
+        if PlayerState.shared.state?.track.uri == uri {
             return
         }
         if !(appRemote.isConnected) {
@@ -384,11 +392,22 @@ class HomeViewController: UIViewController, StoreKitOpenable {
 private extension HomeViewController {
     func updateView() {
         view.addSubviews([shareButton])
-        setupPlayerView()
+//        setupPlayerView()
+        setupPlayerViewController()
         setupShareButton()
 //        setupSpotifyConnectButton()
         setupBlurStatusBar()
         view.backgroundColor = UIColor.Theme.primaryBackground
+    }
+    
+    func setupPlayerViewController() {
+//        guard let playerView = playerViewController.view else { return }
+        playerView.delegate = self
+        playerView.translatesAutoresizingMaskIntoConstraints = false
+        playerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        playerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0).isActive = true
+        playerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        playerView.heightAnchor.constraint(equalToConstant: 72).isActive = true
     }
     
     func setupPlayerView() {
@@ -440,7 +459,7 @@ private extension HomeViewController {
 extension HomeViewController: SPTAppRemotePlayerStateDelegate {
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
         self.playerState = playerState
-        PlayerStateController.shared.state = self.playerState
+        PlayerState.shared.state = self.playerState
         updateViewWithPlayerState(playerState)
     }
 }
