@@ -7,9 +7,9 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>1089710469638-9hfujrh045m12iaqk818j01004vmams8.apps.googleusercontent.com</string>
+	<string>1089710469638-36gc1h74k1pf71su5m7orodg1jcstrfn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1089710469638-9hfujrh045m12iaqk818j01004vmams8</string>
+	<string>com.googleusercontent.apps.1089710469638-36gc1h74k1pf71su5m7orodg1jcstrfn</string>
 	<key>API_KEY</key>
 	<string>AIzaSyB6bVeQh0J8gqIT8EOMut05JTNd3EqH5JI</string>
 	<key>GCM_SENDER_ID</key>
@@ -17,7 +17,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.jtgoodney.SoundWorld</string>
+	<string>com.jasongoodney.SoundWorld</string>
 	<key>PROJECT_ID</key>
 	<string>soundworld-51cf7</string>
 	<key>STORAGE_BUCKET</key>
@@ -33,7 +33,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1089710469638:ios:dacebe768de5fd28</string>
+	<string>1:1089710469638:ios:671206eef530578a</string>
 	<key>DATABASE_URL</key>
 	<string>https://soundworld-51cf7.firebaseio.com</string>
 </dict>

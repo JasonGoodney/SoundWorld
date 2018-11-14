@@ -150,7 +150,12 @@ class PlayerView: UIView {
         addSongToSpotifyButton.isHidden = false
     }
     
-
+    func notInstalled() {
+        songNameLabel.text = "Install Spotify"
+        artistNameLabel.text = "Not Playing"
+        addSongToSpotifyButton.isHidden = true
+        albumArtImageView.image = UIImage(named: "logo")
+    }
     
     @objc private func playButtonTapped(_ sender: UIButton) {
         delegate?.playerView(self, playButtonTapped: sender)
