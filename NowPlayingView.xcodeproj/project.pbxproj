@@ -30,6 +30,7 @@
 		D7787A92218D62F300FC1C99 /* Data.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7787A91218D62F300FC1C99 /* Data.plist */; };
 		D7787A94218D6FDE00FC1C99 /* UserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7787A93218D6FDE00FC1C99 /* UserController.swift */; };
 		D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7997CDC21909F170087118C /* PlayerStateController.swift */; };
+		D7D113F2219CE12E002BFA6C /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D113F1219CE12E002BFA6C /* PlayerViewController.swift */; };
 		D7ED2A08218E0F7900B22FB0 /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ED2A07218E0F7900B22FB0 /* LocationController.swift */; };
 		D7FFE49121921345009E41E7 /* Stylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FFE49021921345009E41E7 /* Stylesheet.swift */; };
 		D7FFE49321923872009E41E7 /* SpotifyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FFE49221923872009E41E7 /* SpotifyManager.swift */; };
@@ -69,6 +70,7 @@
 		D7787A91218D62F300FC1C99 /* Data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Data.plist; sourceTree = "<group>"; };
 		D7787A93218D6FDE00FC1C99 /* UserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserController.swift; sourceTree = "<group>"; };
 		D7997CDC21909F170087118C /* PlayerStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStateController.swift; sourceTree = "<group>"; };
+		D7D113F1219CE12E002BFA6C /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		D7ED2A07218E0F7900B22FB0 /* LocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
 		D7FFE49021921345009E41E7 /* Stylesheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stylesheet.swift; sourceTree = "<group>"; };
 		D7FFE49221923872009E41E7 /* SpotifyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyManager.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				F4F973F11CAD60320036411D /* HomeViewController.swift */,
+				D7D113F1219CE12E002BFA6C /* PlayerViewController.swift */,
 				D7787A77218D447C00FC1C99 /* MapViewController.swift */,
 			);
 			path = ViewController;
@@ -386,6 +389,7 @@
 				D7787A74218D447200FC1C99 /* PersonAnnotationView.swift in Sources */,
 				D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */,
 				D7787A8D218D48B200FC1C99 /* AuthManager.swift in Sources */,
+				D7D113F2219CE12E002BFA6C /* PlayerViewController.swift in Sources */,
 				D715688921962E7600C86879 /* StoreKitManager.swift in Sources */,
 				F4F973F21CAD60320036411D /* HomeViewController.swift in Sources */,
 				D7FFE49321923872009E41E7 /* SpotifyManager.swift in Sources */,
