@@ -507,20 +507,22 @@ extension HomeViewController: PlayerViewDelegate {
             }
         } else {
             UIApplication.shared.open(URL(string: appStoreUrlString)!, options: [:]) { (success) in
-                if success { print("opening app store to spotify")}
+                if success { print("opening app store to spotify")} 
             }
         }
     }
     
     func playerView(_ view: PlayerView, albumArtTapped: UITapGestureRecognizer) {
-        guard let artistUri = playerState?.track.artist.uri else { return }
-        let artistUriArray = Array(artistUri.split(separator: ":"))
-        let artist = artistUriArray[1]
-        let artistId = artistUriArray[2]
-
-        let spotifyUrl = "https://open.spotify.com/\(artist)/\(artistId)"
-        
-        open(scheme: spotifyUrl, appStoreUrlString: "https://itunes.apple.com/app/spotify-music/id324684580")
+        let savedSongsViewController = SavedSongsViewController()
+        present(savedSongsViewController, animated: true, completion: nil)
+//        guard let artistUri = playerState?.track.artist.uri else { return }
+//        let artistUriArray = Array(artistUri.split(separator: ":"))
+//        let artist = artistUriArray[1]
+//        let artistId = artistUriArray[2]
+//
+//        let spotifyUrl = "https://open.spotify.com/\(artist)/\(artistId)"
+//
+//        open(scheme: spotifyUrl, appStoreUrlString: "https://itunes.apple.com/app/spotify-music/id324684580")
     }
 }
 

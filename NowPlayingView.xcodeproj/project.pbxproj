@@ -12,6 +12,7 @@
 		998FF9BE1D3E54AC003E339B /* ConnectionStatusIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998FF9BD1D3E54AC003E339B /* ConnectionStatusIndicatorView.swift */; };
 		99A0FFE41D38F9B600A90453 /* PlaybackButtonGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A0FFE31D38F9B600A90453 /* PlaybackButtonGraphics.swift */; };
 		D70353FB2193584700751B0C /* SpotifyConnectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70353FA2193584700751B0C /* SpotifyConnectButton.swift */; };
+		D70BBFB6219BC0B500B869D8 /* SavedSongsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D70BBFB5219BC0B500B869D8 /* SavedSongsViewController.swift */; };
 		D715688921962E7600C86879 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D715688821962E7600C86879 /* StoreKitManager.swift */; };
 		D73E559021900E8500C7079C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D73E558F21900E8500C7079C /* AudioToolbox.framework */; };
 		D7787A74218D447200FC1C99 /* PersonAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7787A71218D447100FC1C99 /* PersonAnnotationView.swift */; };
@@ -51,6 +52,7 @@
 		998FF9BD1D3E54AC003E339B /* ConnectionStatusIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionStatusIndicatorView.swift; sourceTree = "<group>"; };
 		99A0FFE31D38F9B600A90453 /* PlaybackButtonGraphics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaybackButtonGraphics.swift; sourceTree = "<group>"; };
 		D70353FA2193584700751B0C /* SpotifyConnectButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyConnectButton.swift; sourceTree = "<group>"; };
+		D70BBFB5219BC0B500B869D8 /* SavedSongsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedSongsViewController.swift; sourceTree = "<group>"; };
 		D715688821962E7600C86879 /* StoreKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitManager.swift; sourceTree = "<group>"; };
 		D73E558F21900E8500C7079C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D7787A71218D447100FC1C99 /* PersonAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersonAnnotationView.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 			children = (
 				F4F973F11CAD60320036411D /* HomeViewController.swift */,
 				D7787A77218D447C00FC1C99 /* MapViewController.swift */,
+				D70BBFB5219BC0B500B869D8 /* SavedSongsViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -385,6 +388,7 @@
 				D7787A87218D488500FC1C99 /* User.swift in Sources */,
 				D7787A74218D447200FC1C99 /* PersonAnnotationView.swift in Sources */,
 				D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */,
+				D70BBFB6219BC0B500B869D8 /* SavedSongsViewController.swift in Sources */,
 				D7787A8D218D48B200FC1C99 /* AuthManager.swift in Sources */,
 				D715688921962E7600C86879 /* StoreKitManager.swift in Sources */,
 				F4F973F21CAD60320036411D /* HomeViewController.swift in Sources */,
