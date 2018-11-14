@@ -4,15 +4,9 @@ import MapKit
 import FirebaseAuth
 
 class HomeViewController: UIViewController, StoreKitOpenable {
-
-    private var hasSafeArea: Bool {
-        guard #available(iOS 11.0, *), let topPadding = UIApplication.shared.keyWindow?.safeAreaInsets.top, topPadding > 24 else {
-            return false
-        }
-        return true
-    }
     
     // MARK: - Properties
+    var musicService: MusicService = .local
     private let databaseManager = DatabaseManager()
     fileprivate var playURI = ""
     var trackIdentifier = "" {
