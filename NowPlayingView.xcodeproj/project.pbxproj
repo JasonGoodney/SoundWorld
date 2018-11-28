@@ -29,6 +29,7 @@
 		D7787A92218D62F300FC1C99 /* Data.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7787A91218D62F300FC1C99 /* Data.plist */; };
 		D7787A94218D6FDE00FC1C99 /* UserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7787A93218D6FDE00FC1C99 /* UserController.swift */; };
 		D7997CDD21909F170087118C /* PlayerStateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7997CDC21909F170087118C /* PlayerStateController.swift */; };
+		D79B004021A108AB009EB34A /* UIViewController+ToastAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79B003F21A108AA009EB34A /* UIViewController+ToastAlert.swift */; };
 		D7D113F2219CE12E002BFA6C /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D113F1219CE12E002BFA6C /* PlayerViewController.swift */; };
 		D7D113F4219CE4E1002BFA6C /* MusicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D113F3219CE4E1002BFA6C /* MusicService.swift */; };
 		D7ED2A08218E0F7900B22FB0 /* LocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7ED2A07218E0F7900B22FB0 /* LocationController.swift */; };
@@ -69,6 +70,7 @@
 		D7787A91218D62F300FC1C99 /* Data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Data.plist; sourceTree = "<group>"; };
 		D7787A93218D6FDE00FC1C99 /* UserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserController.swift; sourceTree = "<group>"; };
 		D7997CDC21909F170087118C /* PlayerStateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStateController.swift; sourceTree = "<group>"; };
+		D79B003F21A108AA009EB34A /* UIViewController+ToastAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+ToastAlert.swift"; sourceTree = "<group>"; };
 		D7D113F1219CE12E002BFA6C /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		D7D113F3219CE4E1002BFA6C /* MusicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicService.swift; sourceTree = "<group>"; };
 		D7ED2A07218E0F7900B22FB0 /* LocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationController.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				D7787A8A218D48B200FC1C99 /* Networking */,
 				F6EB42E21D2BB0D800F57322 /* ContentCollectionViewController.swift */,
 				99A0FFE31D38F9B600A90453 /* PlaybackButtonGraphics.swift */,
+				D79B003F21A108AA009EB34A /* UIViewController+ToastAlert.swift */,
 				D7FFE48E2192107B009E41E7 /* Resources */,
 			);
 			path = NowPlayingView;
@@ -335,6 +338,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-NowPlayingView/Pods-NowPlayingView-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
+				"${BUILT_PRODUCTS_DIR}/SpotifyLogin/SpotifyLogin.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -342,6 +346,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SpotifyLogin.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -378,6 +383,7 @@
 				D7787A94218D6FDE00FC1C99 /* UserController.swift in Sources */,
 				D7787A83218D488500FC1C99 /* Song.swift in Sources */,
 				D7787A78218D447C00FC1C99 /* MapViewController.swift in Sources */,
+				D79B004021A108AB009EB34A /* UIViewController+ToastAlert.swift in Sources */,
 				D7ED2A08218E0F7900B22FB0 /* LocationController.swift in Sources */,
 				99A0FFE41D38F9B600A90453 /* PlaybackButtonGraphics.swift in Sources */,
 				D7787A89218D48A700FC1C99 /* PlayerView.swift in Sources */,

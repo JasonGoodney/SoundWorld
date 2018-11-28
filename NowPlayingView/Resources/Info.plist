@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>WeSongs</string>
+	<string>SoundWorld</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,7 +29,7 @@
 			<string>com.jasongoodney.SoundWorld</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>comjtgwesongs</string>
+				<string>comsoundworldredirect</string>
 			</array>
 		</dict>
 	</array>
@@ -38,14 +38,9 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>spotify</string>
-		<string>flickr</string>
-		<string>maps</string>
-		<string>fb</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>To share what you are listening too!</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Shows your location on the map and helps improve OpenStreetMap.</string>
 	<key>UIBackgroundModes</key>
@@ -71,7 +66,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>kTCCServiceMediaLibrary</key>
-	<string>To share what you are listening too!</string>
 </dict>
 </plist>

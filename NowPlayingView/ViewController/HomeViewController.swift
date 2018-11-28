@@ -2,10 +2,12 @@ import UIKit
 import StoreKit
 import MapKit
 import FirebaseAuth
+import SpotifyLogin
 
 class HomeViewController: UIViewController, StoreKitOpenable {
     
     // MARK: - Properties
+    private var didOpenActivityViewControllerApp = false
     var musicService: MusicService = .local
     private let databaseManager = DatabaseManager()
     fileprivate var playURI = ""
@@ -28,7 +30,15 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    lazy var spotifyLoginButton: SpotifyLoginButton = {
+        let button = SpotifyLoginButton(viewController: self,
+                                        scopes: [.streaming,
+                                                .userReadTop,
+                                                .playlistReadPrivate,
+                                                .userLibraryRead])
+        button.addTarget(self, action: #selector(spotifyLoginButtonTapped), for: .touchUpInside)
+        return button
+    }()
     lazy var shareButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "shareRounded"), for: .normal)
@@ -36,6 +46,14 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         button.tintColor = UIColor.Theme.primaryBackground
         return button
     }()
+    
+    @objc func spotifyLoginButtonTapped() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: - Lifecycle
     override func viewWillAppear(_ animated: Bool) {
@@ -48,8 +66,30 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if didOpenActivityViewControllerApp && !appRemote.isConnected {
+            appRemote.connect()
+            guard let playerState = playerState else { return }
+            updateViewWithPlayerState(playerState)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        SpotifyLogin.shared.getAccessToken { [weak self] (token, error) in
+            //self?.spotifyLoginButton.alpha = (error == nil) ? 1.0 : 0.0
+            if error != nil, token == nil {
+                print("\n\n\n\n\n\nno access \(error)\n\n\n\n\n")
+            }
+        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(spotifyLoginButtonTapped),
+                                               name: .SpotifyLoginSuccessful,
+                                               object: nil)
+        
         
         addChild(mapViewController)
         view.addSubview(mapViewController.view)
@@ -58,6 +98,12 @@ class HomeViewController: UIViewController, StoreKitOpenable {
         addChild(playerViewController)
         view.addSubview(playerViewController.view)
         playerViewController.didMove(toParent: self)
+        
+//        view.addSubview(spotifyLoginButton)
+//        spotifyLoginButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+//        spotifyLoginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+//        spotifyLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        spotifyLoginButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
         updateView()
                 
@@ -439,10 +485,12 @@ extension HomeViewController: SPTAppRemoteUserAPIDelegate {
     }
     
     func appRemoteConnecting() {
+        print("appRemoteConnecting...")
         connectionIndicatorView.state = .connecting
     }
     
     func appRemoteConnected() {
+        print("appRemoteConnected...")
         connectionIndicatorView.state = .connected
         subscribeToPlayerState()
         subscribeToCapabilityChanges()

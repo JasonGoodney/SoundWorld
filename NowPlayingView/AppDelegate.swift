@@ -1,12 +1,14 @@
 import UIKit
 import Firebase
+import SpotifyLogin
 
 @UIApplicationMain
 class AppDelegate: UIResponder,
     UIApplicationDelegate, SPTAppRemoteDelegate {
 
-    fileprivate let clientIdentifier = "ed9a8be7fdd347ea948bb408e580ab3b"
-    fileprivate let redirectUri = URL(string:"comjtgwesongs://")!
+    fileprivate let clientIdentifier = "7ef22c0bed2a4af9a0676af0359333c0"
+    fileprivate let clientSecret = "d190a935b8c74552818e3121109204ca"
+    fileprivate let redirectUri = URL(string:"comsoundworldredirect://")!
 
     // keys
     static fileprivate let kAccessTokenKey = "access-token-key"

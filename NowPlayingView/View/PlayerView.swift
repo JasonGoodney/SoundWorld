@@ -141,7 +141,7 @@ class PlayerView: UIView {
     
     func disconnected() {
         songNameLabel.text = "Connect to Spotify"
-        artistNameLabel.text = "Not Playing"
+        artistNameLabel.text = "Tap here to connect."
         addSongToSpotifyButton.isHidden = true
         albumArtImageView.image = UIImage(named: "logo")
     }
@@ -152,7 +152,7 @@ class PlayerView: UIView {
     
     func notInstalled() {
         songNameLabel.text = "Install Spotify"
-        artistNameLabel.text = "Not Playing"
+        artistNameLabel.text = "Tap here to install."
         addSongToSpotifyButton.isHidden = true
         albumArtImageView.image = UIImage(named: "logo")
     }
