@@ -1,7 +1,7 @@
-# WeSongs
+# SoundWorld
 > Discover new songs from people around the world.
 
-Discover what people are listening to around the world. Connect WeSongs to Spotify to display to the world what you are listening to and to play what other people are. 
+Discover what people are listening to around the world. Connect SoundWorld to Spotify to display to the world what you are listening to and to play what other people are. 
 
 ** Apple won't approve the app because it needs Spotify installed to work. I find it an exciting to concept to discover music.
 
